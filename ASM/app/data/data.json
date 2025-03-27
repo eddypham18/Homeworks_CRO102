@@ -1,0 +1,104 @@
+{
+  "users": [
+    {
+      "id": "US1",
+      "name": "Nguyễn Văn A",
+      "email": "admin@admin.com",
+      "password": "admin",
+      "phone": "0123456789",
+      "avatar": ""
+    }
+  ],
+  "products": [
+    {
+      "id": "PL1",
+      "name": "Spider Plant",
+      "price": "250.000",
+      "images": [
+        "https://s3-alpha-sig.figma.com/img/8dc1/c3fd/4c79faa42e885c9a92c6e6b29666fdf3?Expires=1743984000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=WZ~AHAuUWatIlQ8mp07V58Mex1ek6L6xilNxkSAMnBikjhLhskyBdsQAqSyE2UrIG4qkJvWuUt5OddJZNYmPU9kYxNzEpWPqoQ0B9CtFgEl7ypXNV4WaZzWG9aw2424vdNu4tmu8Xk9M2kr8YCb7Lc8FCrdg9luvNYMed4BG7IEfsgMhW7qIM75ff1FlSSd24d1DBV2WSAMTldGB1Hg0JlRXkIJGWcUyPePVyHTL8JHc2SnrrdNhsIy1wngJxyIHYBRQ95ZA2BYmZA9Whw29x1dZSqJlfmck1D~Af2Amwmp3HM3pS8GlgO0yLTOOfaDf9IKzkcjqdjhqEdGbmdzLbw__",
+        "https://s3-alpha-sig.figma.com/img/8dc1/c3fd/4c79faa42e885c9a92c6e6b29666fdf3?Expires=1743984000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=WZ~AHAuUWatIlQ8mp07V58Mex1ek6L6xilNxkSAMnBikjhLhskyBdsQAqSyE2UrIG4qkJvWuUt5OddJZNYmPU9kYxNzEpWPqoQ0B9CtFgEl7ypXNV4WaZzWG9aw2424vdNu4tmu8Xk9M2kr8YCb7Lc8FCrdg9luvNYMed4BG7IEfsgMhW7qIM75ff1FlSSd24d1DBV2WSAMTldGB1Hg0JlRXkIJGWcUyPePVyHTL8JHc2SnrrdNhsIy1wngJxyIHYBRQ95ZA2BYmZA9Whw29x1dZSqJlfmck1D~Af2Amwmp3HM3pS8GlgO0yLTOOfaDf9IKzkcjqdjhqEdGbmdzLbw__",
+        "https://s3-alpha-sig.figma.com/img/8dc1/c3fd/4c79faa42e885c9a92c6e6b29666fdf3?Expires=1743984000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=WZ~AHAuUWatIlQ8mp07V58Mex1ek6L6xilNxkSAMnBikjhLhskyBdsQAqSyE2UrIG4qkJvWuUt5OddJZNYmPU9kYxNzEpWPqoQ0B9CtFgEl7ypXNV4WaZzWG9aw2424vdNu4tmu8Xk9M2kr8YCb7Lc8FCrdg9luvNYMed4BG7IEfsgMhW7qIM75ff1FlSSd24d1DBV2WSAMTldGB1Hg0JlRXkIJGWcUyPePVyHTL8JHc2SnrrdNhsIy1wngJxyIHYBRQ95ZA2BYmZA9Whw29x1dZSqJlfmck1D~Af2Amwmp3HM3pS8GlgO0yLTOOfaDf9IKzkcjqdjhqEdGbmdzLbw__"
+      ],
+      "size": "Nhỏ",
+      "quantity": 125,
+      "origin": "Châu Phi",
+      "character": "Ưa bóng",
+      "new": true,
+      "type": "plant"
+    },
+    {
+      "id": "PL2",
+      "name": "Song of India",
+      "price": "250.000",
+      "images": [
+        "https://s3-alpha-sig.figma.com/img/28d9/bffb/22f7b1d90b3a956129c0034bc73180a5?Expires=1743984000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=rT8v3edbgHgJ~QnC1bx8-BnBvBU~Jczln9ZB55NcaKzp1r2UhFevF9Xi8zYCTimsP20NUvkZsgv1um3YCgeKvn5p2kI0scSqnjxU5sAXZYOi3-rbfgKl0FEomC-4t~s~uonFEwxrrc6P-7HIMvvttU7J3TJtBZr~ahs~y0TPG~YV8fimQ5XC7ASTIQUffZFUv-sQgLh9921Yhe~266fkIhr51dHWsY25C3k1ZBSj2TlJcSNv4d3EFGbp4mYTv5eMBzx-F2WhwcqG8f6E-OqgztaF-g13e6YALk9TOjWKYYTAcAica9gYu13o~SUhXbLyQHG-FUjqnxIEtplYMWxzkw__",
+        "https://s3-alpha-sig.figma.com/img/28d9/bffb/22f7b1d90b3a956129c0034bc73180a5?Expires=1743984000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=rT8v3edbgHgJ~QnC1bx8-BnBvBU~Jczln9ZB55NcaKzp1r2UhFevF9Xi8zYCTimsP20NUvkZsgv1um3YCgeKvn5p2kI0scSqnjxU5sAXZYOi3-rbfgKl0FEomC-4t~s~uonFEwxrrc6P-7HIMvvttU7J3TJtBZr~ahs~y0TPG~YV8fimQ5XC7ASTIQUffZFUv-sQgLh9921Yhe~266fkIhr51dHWsY25C3k1ZBSj2TlJcSNv4d3EFGbp4mYTv5eMBzx-F2WhwcqG8f6E-OqgztaF-g13e6YALk9TOjWKYYTAcAica9gYu13o~SUhXbLyQHG-FUjqnxIEtplYMWxzkw__",
+        "https://s3-alpha-sig.figma.com/img/28d9/bffb/22f7b1d90b3a956129c0034bc73180a5?Expires=1743984000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=rT8v3edbgHgJ~QnC1bx8-BnBvBU~Jczln9ZB55NcaKzp1r2UhFevF9Xi8zYCTimsP20NUvkZsgv1um3YCgeKvn5p2kI0scSqnjxU5sAXZYOi3-rbfgKl0FEomC-4t~s~uonFEwxrrc6P-7HIMvvttU7J3TJtBZr~ahs~y0TPG~YV8fimQ5XC7ASTIQUffZFUv-sQgLh9921Yhe~266fkIhr51dHWsY25C3k1ZBSj2TlJcSNv4d3EFGbp4mYTv5eMBzx-F2WhwcqG8f6E-OqgztaF-g13e6YALk9TOjWKYYTAcAica9gYu13o~SUhXbLyQHG-FUjqnxIEtplYMWxzkw__"
+      ],
+      "size": "Vừa",
+      "quantity": 74,
+      "origin": "Châu Á",
+      "character": "Ưa bóng",
+      "new": false,
+      "type": "plant"
+    },
+    {
+      "id": "PL3",
+      "name": "Pink Anthurium",
+      "price": "250.000",
+      "images": [
+        "https://s3-alpha-sig.figma.com/img/79db/7216/eefbefecedce13e3099111346323ae5a?Expires=1743984000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=s0YCVN50zDZ5UAGz~LsBrQOdNm3QUtjlIrhGCqok5PNAbnWNGNyknWJSLWgDYakYm2CTkDFEJBVMjGSht9FyLnTuURN6lzQvi86zK-4h6vHwogveg3DLHTc1kcymKx3NjY3N5dXdoDFJMRN6XsT2Yr2XGD2mZEQ6RMNGBCzJR7HYxq-~XM1Ypd4S88Zxe4~6JnX114jfW6zDVn~qmPU5etqXe7cpHsze5fxxeSiaxbWXIng1sxVfhcibT2GVVfpUgA0lwYi~Vz5n24st4BK753LQ42yGDA0tKw3S9qK6wxqIkphMyRCd9B0Olwannn~dW1LXmNpvCqePshbCWoXlYg__",
+        "https://s3-alpha-sig.figma.com/img/79db/7216/eefbefecedce13e3099111346323ae5a?Expires=1743984000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=s0YCVN50zDZ5UAGz~LsBrQOdNm3QUtjlIrhGCqok5PNAbnWNGNyknWJSLWgDYakYm2CTkDFEJBVMjGSht9FyLnTuURN6lzQvi86zK-4h6vHwogveg3DLHTc1kcymKx3NjY3N5dXdoDFJMRN6XsT2Yr2XGD2mZEQ6RMNGBCzJR7HYxq-~XM1Ypd4S88Zxe4~6JnX114jfW6zDVn~qmPU5etqXe7cpHsze5fxxeSiaxbWXIng1sxVfhcibT2GVVfpUgA0lwYi~Vz5n24st4BK753LQ42yGDA0tKw3S9qK6wxqIkphMyRCd9B0Olwannn~dW1LXmNpvCqePshbCWoXlYg__",
+        "https://s3-alpha-sig.figma.com/img/79db/7216/eefbefecedce13e3099111346323ae5a?Expires=1743984000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=s0YCVN50zDZ5UAGz~LsBrQOdNm3QUtjlIrhGCqok5PNAbnWNGNyknWJSLWgDYakYm2CTkDFEJBVMjGSht9FyLnTuURN6lzQvi86zK-4h6vHwogveg3DLHTc1kcymKx3NjY3N5dXdoDFJMRN6XsT2Yr2XGD2mZEQ6RMNGBCzJR7HYxq-~XM1Ypd4S88Zxe4~6JnX114jfW6zDVn~qmPU5etqXe7cpHsze5fxxeSiaxbWXIng1sxVfhcibT2GVVfpUgA0lwYi~Vz5n24st4BK753LQ42yGDA0tKw3S9qK6wxqIkphMyRCd9B0Olwannn~dW1LXmNpvCqePshbCWoXlYg__"
+      ],
+      "size": "To",
+      "quantity": 24,
+      "origin": "Châu Phi",
+      "character": "Ưa bóng",
+      "new": false,
+      "type": "plant"
+    },
+    {
+      "id": "PP1",
+      "name": "Planta Trắng",
+      "price": "250.000",
+      "images": [
+        "https://s3-alpha-sig.figma.com/img/2513/c966/834221fbc31c808dfbb9ba52ad5ef5e4?Expires=1743984000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=ExogRBopOvyg2GfB4DHk~0k~Ydadsd2s3b3-D3dz7slmG8P3LKbbgWbb~YwmFbFTqSKlEowkPmft5aTbB8KnkkvGjkTQYPsS8wJOTevdTzLvcXismrGX7lxsOXCZEi~bP9OH8vW8UzFdxqmTjeNtWw2-6fCArQnvQsngj3eTycPwsQsCugBP9pU9OC3EGMabseJh773nsKjNxeONGXsepH98TGxaAYWDkuw93ykIEmxZnhoN4aQlWYeIUlDiGoIE7dnSTwOap~poBjpUoWYU4Ln-EV6Xb6RvTvLY-d6Pjp0CCD6REbfUShhSbSL1ZiDh7FyigNr7l1Oi3Ro~ibGOYw__",
+        "https://s3-alpha-sig.figma.com/img/2513/c966/834221fbc31c808dfbb9ba52ad5ef5e4?Expires=1743984000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=ExogRBopOvyg2GfB4DHk~0k~Ydadsd2s3b3-D3dz7slmG8P3LKbbgWbb~YwmFbFTqSKlEowkPmft5aTbB8KnkkvGjkTQYPsS8wJOTevdTzLvcXismrGX7lxsOXCZEi~bP9OH8vW8UzFdxqmTjeNtWw2-6fCArQnvQsngj3eTycPwsQsCugBP9pU9OC3EGMabseJh773nsKjNxeONGXsepH98TGxaAYWDkuw93ykIEmxZnhoN4aQlWYeIUlDiGoIE7dnSTwOap~poBjpUoWYU4Ln-EV6Xb6RvTvLY-d6Pjp0CCD6REbfUShhSbSL1ZiDh7FyigNr7l1Oi3Ro~ibGOYw__",
+        "https://s3-alpha-sig.figma.com/img/2513/c966/834221fbc31c808dfbb9ba52ad5ef5e4?Expires=1743984000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=ExogRBopOvyg2GfB4DHk~0k~Ydadsd2s3b3-D3dz7slmG8P3LKbbgWbb~YwmFbFTqSKlEowkPmft5aTbB8KnkkvGjkTQYPsS8wJOTevdTzLvcXismrGX7lxsOXCZEi~bP9OH8vW8UzFdxqmTjeNtWw2-6fCArQnvQsngj3eTycPwsQsCugBP9pU9OC3EGMabseJh773nsKjNxeONGXsepH98TGxaAYWDkuw93ykIEmxZnhoN4aQlWYeIUlDiGoIE7dnSTwOap~poBjpUoWYU4Ln-EV6Xb6RvTvLY-d6Pjp0CCD6REbfUShhSbSL1ZiDh7FyigNr7l1Oi3Ro~ibGOYw__"
+      ],
+      "size": "Nhỏ",
+      "quantity": 12,
+      "origin": "Việt Nam",
+      "type": "plantpot"
+    },
+    {
+      "id": "PP2",
+      "name": "Planta Lemon Balm",
+      "price": "250.000",
+      "images": [
+        "https://s3-alpha-sig.figma.com/img/740c/be92/30d0e9ed9212eaa46291bb0045a45840?Expires=1743984000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=VxVStnWVvG7wyQw594hhMGP5PZqFXSscQFkucRvF-qR0OKv3d2X6rlLFjrOtYb24C4aS9rzTEXllJsOrKc~9JDMxeOVQL7jNwnMMwVHva6TIdYQ-PDruW~8RhEtzi3aqmq4unS0S8COhcYzwVrlXq6Azl6V-AHFkBWLUIbxvLQYJfKQo1kQyeGeI~SWFC8C4lXoItaOJNSADmI3CvmDAV5unz3-s57Ozs~nQJtcDLESzWzUnd1f27BRSj2pUEcsI7bwo6MR13-c1yx16Y8hJE1t6AhkEYUig-b2LWWLc4wc50H34yDcKD0CaJ9wo0lBmSMReyrsOZGEwnKtfuOu-SA__",
+        "https://s3-alpha-sig.figma.com/img/740c/be92/30d0e9ed9212eaa46291bb0045a45840?Expires=1743984000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=VxVStnWVvG7wyQw594hhMGP5PZqFXSscQFkucRvF-qR0OKv3d2X6rlLFjrOtYb24C4aS9rzTEXllJsOrKc~9JDMxeOVQL7jNwnMMwVHva6TIdYQ-PDruW~8RhEtzi3aqmq4unS0S8COhcYzwVrlXq6Azl6V-AHFkBWLUIbxvLQYJfKQo1kQyeGeI~SWFC8C4lXoItaOJNSADmI3CvmDAV5unz3-s57Ozs~nQJtcDLESzWzUnd1f27BRSj2pUEcsI7bwo6MR13-c1yx16Y8hJE1t6AhkEYUig-b2LWWLc4wc50H34yDcKD0CaJ9wo0lBmSMReyrsOZGEwnKtfuOu-SA__",
+        "https://s3-alpha-sig.figma.com/img/740c/be92/30d0e9ed9212eaa46291bb0045a45840?Expires=1743984000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=VxVStnWVvG7wyQw594hhMGP5PZqFXSscQFkucRvF-qR0OKv3d2X6rlLFjrOtYb24C4aS9rzTEXllJsOrKc~9JDMxeOVQL7jNwnMMwVHva6TIdYQ-PDruW~8RhEtzi3aqmq4unS0S8COhcYzwVrlXq6Azl6V-AHFkBWLUIbxvLQYJfKQo1kQyeGeI~SWFC8C4lXoItaOJNSADmI3CvmDAV5unz3-s57Ozs~nQJtcDLESzWzUnd1f27BRSj2pUEcsI7bwo6MR13-c1yx16Y8hJE1t6AhkEYUig-b2LWWLc4wc50H34yDcKD0CaJ9wo0lBmSMReyrsOZGEwnKtfuOu-SA__"
+      ],
+      "size": "Vừa",
+      "quantity": 20,
+      "origin": "Trung Quốc",
+      "type": "plantpot"
+    },
+    {
+      "id": "AC1",
+      "name": "Bình tưới Sierra",
+      "price": "310.000",
+      "images": [
+        "https://s3-alpha-sig.figma.com/img/508d/4a73/1e689a274cf0d0cacd0620a56d43fb5e?Expires=1743984000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=H9P-3Y9fh1rvokbafwHsz-9OY8iyz4WnLkIB0kgnqgN3AeTCDlslfjqEOpRqu6dVeJ-hqPrWAcReMSCcRBpAFBJCFMgZEnjzlUJ7bUqejt8njWZj6PU3dqb39IvDOwhHj2e6xxt7q5dfxGtxqfxKk8S0rjDOWPovzdE2LpgiRtSrb7Kqm80dkfOwL7~oStuuLKGl0k8I4wB-ViJ5n90tQi01LNvFQ-KXOHm-ZBU9CWfmbV~DDJbZgihBSi-v03Cxf9YyENU6uFkJblNHQ0I0~WD-rF-sWBP7HBw0qWZ-yXyyQ82tYwrRV4DhdzjMpIa3eNzy3g7-LXH89B5TV0OusQ__",
+        "https://s3-alpha-sig.figma.com/img/508d/4a73/1e689a274cf0d0cacd0620a56d43fb5e?Expires=1743984000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=H9P-3Y9fh1rvokbafwHsz-9OY8iyz4WnLkIB0kgnqgN3AeTCDlslfjqEOpRqu6dVeJ-hqPrWAcReMSCcRBpAFBJCFMgZEnjzlUJ7bUqejt8njWZj6PU3dqb39IvDOwhHj2e6xxt7q5dfxGtxqfxKk8S0rjDOWPovzdE2LpgiRtSrb7Kqm80dkfOwL7~oStuuLKGl0k8I4wB-ViJ5n90tQi01LNvFQ-KXOHm-ZBU9CWfmbV~DDJbZgihBSi-v03Cxf9YyENU6uFkJblNHQ0I0~WD-rF-sWBP7HBw0qWZ-yXyyQ82tYwrRV4DhdzjMpIa3eNzy3g7-LXH89B5TV0OusQ__",
+        "https://s3-alpha-sig.figma.com/img/508d/4a73/1e689a274cf0d0cacd0620a56d43fb5e?Expires=1743984000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=H9P-3Y9fh1rvokbafwHsz-9OY8iyz4WnLkIB0kgnqgN3AeTCDlslfjqEOpRqu6dVeJ-hqPrWAcReMSCcRBpAFBJCFMgZEnjzlUJ7bUqejt8njWZj6PU3dqb39IvDOwhHj2e6xxt7q5dfxGtxqfxKk8S0rjDOWPovzdE2LpgiRtSrb7Kqm80dkfOwL7~oStuuLKGl0k8I4wB-ViJ5n90tQi01LNvFQ-KXOHm-ZBU9CWfmbV~DDJbZgihBSi-v03Cxf9YyENU6uFkJblNHQ0I0~WD-rF-sWBP7HBw0qWZ-yXyyQ82tYwrRV4DhdzjMpIa3eNzy3g7-LXH89B5TV0OusQ__"
+      ],
+      "size": "Nhỏ",
+      "quantity": 5,
+      "origin": "Việt Nam",
+      "type": "accessory"
+    }
+  ]
+}
