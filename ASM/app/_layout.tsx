@@ -9,6 +9,10 @@ import SignUpScreen from './screens/SignUpScreen';
 import TabNavigator from './navigators/TabNavigator';
 import Details from './screens/DetailsScreen';
 import ListProduct from './screens/ListProductScreen';
+import CartScreen from './screens/CartScreen';
+import PaymentScreen from './screens/PaymentScreen';
+import AfterPayment from './screens/AfterPaymentScreen';
+import PaymentSuccess from './screens/PaymentSuccessScreen';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 
@@ -52,6 +56,10 @@ export default function RootLayout() {
       <Stack.Screen name="Tab" component={TabNavigator} />
       <Stack.Screen name="Details" component={Details} />
       <Stack.Screen name="ListProduct" component={ListProduct} />
+      <Stack.Screen name="Cart" component={CartScreen} />
+      <Stack.Screen name="Payment" component={PaymentScreen} />
+      <Stack.Screen name="AfterPayment" component={AfterPayment} />
+      <Stack.Screen name="PaymentSuccess" component={PaymentSuccess} />
     </Stack.Navigator>
   );
 }

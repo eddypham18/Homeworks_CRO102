@@ -78,6 +78,7 @@ const LoginScreen = (props: any) => {
         } else {
           await AsyncStorage.removeItem('account');
         }
+        AsyncStorage.setItem('userId', response.data[0].id);
         navigation.navigate('Tab', { screen: 'Home' });
       } else {
         setError('Tài khoản hoặc mật khẩu không chính xác!');

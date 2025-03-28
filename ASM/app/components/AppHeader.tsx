@@ -1,7 +1,13 @@
 import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
 import React from 'react';
 
-const AppHeader = ({ navigation, title, cart }: any) => {
+const AppHeader = ({
+  navigation,
+  title,
+  cart,
+  deleteCart,
+  funcDeleteCart,
+}: any) => {
   // Navigation
   const goBack = () => {
     navigation.goBack();
@@ -9,6 +15,29 @@ const AppHeader = ({ navigation, title, cart }: any) => {
 
   const goToCart = () => {
     navigation.navigate('Cart');
+  };
+
+  const renderRightIcon = () => {
+    if (deleteCart) {
+      return (
+        <TouchableOpacity onPress={funcDeleteCart}>
+          <Image
+            style={styles.icon}
+            source={require('../../assets/images/deleteIcon.png')}
+          />
+        </TouchableOpacity>
+      );
+    } else if (cart) {
+      return (
+        <TouchableOpacity onPress={goToCart}>
+          <Image
+            style={styles.icon}
+            source={require('../../assets/images/cartIcon.png')}
+          />
+        </TouchableOpacity>
+      );
+    }
+    return <View />;
   };
 
   return (
@@ -20,16 +49,7 @@ const AppHeader = ({ navigation, title, cart }: any) => {
         />
       </TouchableOpacity>
       <Text style={styles.title}>{title}</Text>
-      {cart ? (
-        <TouchableOpacity onPress={goToCart}>
-          <Image
-            style={styles.backIcon}
-            source={require('../../assets/images/cartIcon.png')}
-          />
-        </TouchableOpacity>
-      ) : (
-        <View />
-      )}
+      {renderRightIcon()}
     </View>
   );
 };
@@ -46,6 +66,10 @@ const styles = StyleSheet.create({
   },
   backIcon: {
     marginLeft: -10,
+    width: 24,
+    height: 24,
+  },
+  icon: {
     width: 24,
     height: 24,
   },

@@ -76,12 +76,15 @@ const SignUpScreen = (props: any) => {
         return;
       }
 
+      const rand = Math.floor(Math.random() * 1000);
       const response = await api.post('/users', {
+        id: 'US' + rand,
         name,
         email,
         password,
         phone: '',
         avatar: '',
+        address: '',
       });
 
       if (response.status === 201 || response.status === 200) {

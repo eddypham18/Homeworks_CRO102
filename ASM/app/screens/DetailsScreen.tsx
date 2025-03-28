@@ -12,6 +12,7 @@ import {
 import PagerView from 'react-native-pager-view';
 import api from '../configs/api';
 import AppHeader from '../components/AppHeader';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface ProductType {
   id: string;
@@ -60,20 +61,46 @@ const Details = (props: any) => {
   }, [id]);
 
   // Thêm sản phẩm vào giỏ hàng
-  const add = () => {
+  const add = async () => {
     if (!product) return;
-    if (quantity >= 1) {
-      const item = {
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        quantity: quantity,
-        images: product.images,
-        select: false,
-      };
-      ToastAndroid.show('Đã thêm vào giỏ hàng!', ToastAndroid.SHORT);
-    } else {
+    if (quantity < 1) {
       ToastAndroid.show('Vui lòng chọn số lượng!', ToastAndroid.SHORT);
+      return;
+    }
+    try {
+      const userId = await AsyncStorage.getItem('userId');
+      if (!userId) {
+        Alert.alert('Lỗi', 'User chưa đăng nhập');
+        return;
+      }
+      // Lấy giỏ hàng của user
+      const cartResponse = await api.get(`/cart?userId=${userId}`);
+      let cartData =
+        cartResponse.data && cartResponse.data.length > 0
+          ? cartResponse.data[0]
+          : null;
+      // Nếu chưa có giỏ hàng, tạo mới giỏ hàng
+      if (!cartData) {
+        const rand = Math.floor(Math.random() * 1000);
+        cartData = { id: 'CA' + rand, userId, items: [] };
+        await api.post('/cart', cartData);
+      }
+      // Kiểm tra nếu sản phẩm đã tồn tại trong giỏ hàng
+      const existingIndex = cartData.items.findIndex(
+        (item: any) => item.id === product.id
+      );
+      if (existingIndex > -1) {
+        cartData.items[existingIndex].quantity += quantity;
+      } else {
+        cartData.items.push({ id: product.id, quantity, select: true });
+      }
+
+      await api.patch(`/cart/${cartData.id}`, { items: cartData.items });
+      ToastAndroid.show('Đã thêm vào giỏ hàng!', ToastAndroid.SHORT);
+      navigation.navigate('Cart');
+    } catch (error: any) {
+      console.log('Lỗi thêm vào giỏ hàng:', error);
+      Alert.alert('Lỗi', 'Không thể thêm vào giỏ hàng');
     }
   };
 
@@ -216,7 +243,7 @@ const Details = (props: any) => {
         </View>
         <View>
           <Text style={styles.total}>
-            {totalTemp.toLocaleString('en-US')} đ
+            {totalTemp.toLocaleString('de-DE')} đ
           </Text>
         </View>
       </View>
