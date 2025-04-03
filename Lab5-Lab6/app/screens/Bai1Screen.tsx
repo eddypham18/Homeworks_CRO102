@@ -40,6 +40,14 @@ const Bai1Screen = ({ navigation }: any) => {
             color="#d9534f"
           />
         </View>
+
+        <View style={styles.button}>
+          <Button
+            title="Sang bài 2 - Lab6"
+            onPress={() => navigation.navigate('Bai2Screen')}
+            color="#5bc0de"
+          />
+        </View>
       </View>
     </View>
   );

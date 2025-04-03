@@ -23,7 +23,13 @@
     {
       "id": "CA1",
       "userId": "US1",
-      "items": []
+      "items": [
+        {
+          "id": "PL4",
+          "quantity": 4,
+          "select": true
+        }
+      ]
     },
     {
       "id": "CA286",

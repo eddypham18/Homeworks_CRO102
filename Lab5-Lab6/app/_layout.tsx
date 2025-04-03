@@ -10,6 +10,7 @@ import store from './configs/store';
 import Bai1Screen from './screens/Bai1Screen';
 import Bai2Screen from './screens/Bai2Screen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import Lab5 from './screens/Lab5';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -34,17 +35,15 @@ export default function RootLayout() {
   return (
     <Provider store={store}>
       <SafeAreaProvider>
-        {/* Không cần NavigationContainer vì expo-router đã bao bọc sẵn */}
         <Stack.Navigator
-          initialRouteName="Bai1Screen"
+          initialRouteName="Lab5"
           screenOptions={{
             headerShown: false,
-            // Nếu cần sử dụng theme, bạn có thể áp dụng vào các screen qua props
-            // Hoặc cấu hình trực tiếp trong từng screen
           }}
         >
           <Stack.Screen name="Bai1Screen" component={Bai1Screen} />
           <Stack.Screen name="Bai2Screen" component={Bai2Screen} />
+          <Stack.Screen name="Lab5" component={Lab5} />
         </Stack.Navigator>
         <StatusBar style="auto" />
       </SafeAreaProvider>

@@ -13,3 +13,4 @@ export const pokemonApi = createApi({
 });
 
 export const { useLazyGetPokemonByNameQuery } = pokemonApi;
+export default pokemonApi;

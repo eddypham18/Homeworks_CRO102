@@ -1,14 +1,35 @@
-import { configureStore } from '@reduxjs/toolkit';
-import counterSlice from './counterSlice';
-import { pokemonApi } from './pokemonAPI';
+import { configureStore, createSlice, combineReducers } from '@reduxjs/toolkit';
+import { persistStore, persistReducer } from 'redux-persist';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ImagePickerResponse } from 'react-native-image-picker';
+import rootReducer from './rootReducer'
 
-const store = configureStore({
-  reducer: {
-    counter: counterSlice,
-    [pokemonApi.reducerPath]: pokemonApi.reducer,
-  },
+// Configure persist
+const persistConfig = {
+  key: 'root',
+  storage: AsyncStorage,
+  whitelist: ['images']
+};
+
+// Create persisted reducer
+const persistedReducer = persistReducer(
+  persistConfig,
+  rootReducer
+);
+
+// Configure store
+export const store = configureStore({
+  reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(pokemonApi.middleware),
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE']
+      }
+    })
 });
 
-export default store;
+// Create persistor
+export const persistor = persistStore(store);
+
+// Export types
+export default store; 
