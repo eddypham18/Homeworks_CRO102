@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import { useLazyGetPokemonByNameQuery } from '../configs/pokemonAPI';
 
-const Bai2Screen = () => {
+const Bai2Screen = ({ navigation }: any) => {
   // State để lưu tên pokemon mà người dùng nhập
   const [pokemonName, setPokemonName] = useState('');
 
@@ -10,12 +10,11 @@ const Bai2Screen = () => {
   const [trigger, { data, error, isLoading }] = useLazyGetPokemonByNameQuery();
 
   // Hàm gọi API khi nhấn nút
-  const handleSearch = () => {
-    if (pokemonName) {
-      // Chuyển về chữ thường để đảm bảo query chính xác (PokeAPI hay dùng lowercase)
+  const handleSearch = useCallback(() => {
+    if (pokemonName.trim()) {
       trigger(pokemonName.toLowerCase());
     }
-  };
+  }, [pokemonName, trigger]);
 
   return (
     <View style={styles.container}>
@@ -40,7 +39,7 @@ const Bai2Screen = () => {
           <Text style={styles.info}>
             Kỹ năng:
             {data.abilities
-              .map((abilityObj) => abilityObj.ability.name)
+              .map((abilityObj: any) => abilityObj.ability.name)
               .join(', ')}
           </Text>
         </View>
@@ -52,6 +51,13 @@ const Bai2Screen = () => {
           Không tìm thấy pokemon hoặc có lỗi xảy ra!
         </Text>
       )}
+
+      <View style={{ marginTop: 16 }} />
+
+      <Button
+        title="Sang bài 3"
+        onPress={() => navigation.navigate('Bai3Screen')}
+      />
     </View>
   );
 };
