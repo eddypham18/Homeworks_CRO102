@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Lab7",
-    "slug": "Lab7",
+    "slug": "lab7",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -15,8 +15,7 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      },
-      "package": "com.anonymous.Lab7"
+      }
     },
     "web": {
       "bundler": "metro",
@@ -33,11 +32,19 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ],
-      ["@react-native-google-signin/google-signin"]
+      ]
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "cf8ee3c6-6dac-4a2b-aa2c-4302256c7124"
+      }
+    },
+    "owner": "eddypham18"
   }
 }

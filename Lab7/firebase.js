@@ -1,6 +1,5 @@
-// firebase.js
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithRedirect } from 'firebase/auth';
 
 // Cấu hình Firebase từ Firebase Console (chọn Web App)
 const firebaseConfig = {
@@ -13,8 +12,14 @@ const firebaseConfig = {
   measurementId: 'G-FWL9H4QCKE',
 };
 
-// Khởi tạo Firebase
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+export const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
 
-export { auth };
+export const signInWithGoogle = async () => {
+  try {
+    await signInWithRedirect(auth, googleProvider);
+  } catch (error) {
+    console.error(error);
+  }
+};
