@@ -12,14 +12,17 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDispatch, useSelector } from 'react-redux';
 import CustomTextInput from '../components/CustomTextInput';
-import api from '../configs/api';
+import { loginUser } from '../redux/actions/authActions';
+import { RootState, AppDispatch } from '../redux/store/store';
 
 const LoginScreen = (props: any) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { error, loading } = useSelector((state: RootState) => state.auth);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { navigation } = props;
-  const [error, setError] = useState('');
   const [saveAccount, setSaveAccount] = useState(false);
   const [saveAccountImage, setSaveAccountImage] = useState(
     require('../../assets/images/tickIcon.png')
@@ -61,31 +64,9 @@ const LoginScreen = (props: any) => {
 
   // Hàm đăng nhập
   const loginButton = async () => {
-    if (email.trim() === '' || password.trim() === '') {
-      setError('Vui lòng không để trống email và mật khẩu!');
-      return;
-    }
-    try {
-      const response = await api.get(
-        `/users?email=${email}&password=${password}`
-      );
-      if (response.data && response.data.length > 0) {
-        if (saveAccount) {
-          await AsyncStorage.setItem(
-            'account',
-            JSON.stringify({ email, password })
-          );
-        } else {
-          await AsyncStorage.removeItem('account');
-        }
-        AsyncStorage.setItem('userId', response.data[0].id);
-        navigation.navigate('Tab', { screen: 'Home' });
-      } else {
-        setError('Tài khoản hoặc mật khẩu không chính xác!');
-      }
-    } catch (err) {
-      console.error(err);
-      setError('Đã có lỗi xảy ra. Vui lòng thử lại!');
+    const result = await dispatch(loginUser({ email, password, saveAccount }));
+    if (result.payload) {
+      navigation.navigate('Tab', { screen: 'Home' });
     }
   };
 

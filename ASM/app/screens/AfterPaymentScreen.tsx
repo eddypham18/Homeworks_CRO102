@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -13,32 +13,20 @@ import {
 import AppHeader from '../components/AppHeader';
 import InputUnderlined from '../components/InputUnderlined';
 import api from '../configs/api';
+import { useDispatch, useSelector } from 'react-redux';
+import { processPayment } from '../redux/actions/paymentActions';
+import { RootState } from '../redux/store/store';
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit';
+import { resetPaymentState, setPaymentSuccess } from '../redux/slices/paymentSlice';
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  address: string;
-}
 
-interface AfterPaymentProps {
-  navigation: any;
-  route: {
-    params: {
-      total: number;
-      user: User;
-      deliveryMethod: number;
-      payMethod: number;
-      cartId: string;
-    };
-  };
-}
-
-const AfterPayment = ({ navigation, route }: AfterPaymentProps) => {
+const AfterPayment = ({ navigation, route }: any) => {
+  const dispatch = useDispatch() as ThunkDispatch<RootState, unknown, AnyAction>;
+  const { loading, error: paymentError, paymentSuccess, currentOrder } = useSelector((state: RootState) => state.payment);
+  
   const [modalVisible, setModalVisible] = useState(false);
   // Nhận các tham số được truyền từ màn hình Payment
-  const { total, user, deliveryMethod, payMethod, cartId } = route.params;
+  const { total, user, deliveryMethod, payMethod, cartId, orderId } = route.params;
 
   // State cho thẻ VISA/MASTER
   const [cardNumber, setCardNumber] = useState<string>('');
@@ -51,9 +39,67 @@ const AfterPayment = ({ navigation, route }: AfterPaymentProps) => {
   const [bankName, setBankName] = useState<string>('');
 
   const [error, setError] = useState<string>('');
+  const [orderDetails, setOrderDetails] = useState<any>(null);
+  const [localPaymentSuccess, setLocalPaymentSuccess] = useState<boolean>(false);
+  const [isNavigating, setIsNavigating] = useState<boolean>(false);
+
+  // Reset payment state when component mounts
+  useEffect(() => {
+    dispatch(resetPaymentState());
+  }, []);
 
   // Tính phí vận chuyển
   const shippingFee = deliveryMethod === 1 ? 15000 : 20000;
+
+  // Fetch thông tin đơn hàng
+  useEffect(() => {
+    const fetchOrderDetails = async () => {
+      try {
+        if (!orderId) {
+          setError('Không tìm thấy mã đơn hàng');
+          return;
+        }
+
+        const response = await api.get(`/orders/${orderId}`);
+        
+        if (response.data) {
+          setOrderDetails(response.data);
+        } else {
+          setError('Không thể tải thông tin đơn hàng');
+        }
+      } catch (err) {
+        console.error('Error fetching order details:', err);
+        setError('Có lỗi xảy ra khi tải thông tin đơn hàng');
+      }
+    };
+
+    fetchOrderDetails();
+  }, [orderId]);
+
+  // Xử lý khi thanh toán thành công
+  useEffect(() => {
+    if ((paymentSuccess || localPaymentSuccess) && !isNavigating) {
+      setIsNavigating(true);
+      // Chuyển sang màn hình PaymentSuccess và không cho phép quay lại
+      navigation.replace('PaymentSuccess', {
+        user,
+        payMethod,
+        total,
+        deliveryMethod,
+        cartId,
+        orderId,
+        fromAfterPayment: true // Thêm flag để đánh dấu nguồn màn hình
+      });
+    }
+  }, [paymentSuccess, localPaymentSuccess, isNavigating]);
+
+  // Theo dõi lỗi thanh toán
+  useEffect(() => {
+    if (paymentError) {
+      setError(paymentError);
+      setModalVisible(false);
+    }
+  }, [paymentError]);
 
   // Hàm kiểm tra logic thẻ VISA/MASTERCARD
   const validateCardVisaMaster = () => {
@@ -84,9 +130,9 @@ const AfterPayment = ({ navigation, route }: AfterPaymentProps) => {
   };
 
   const validateCardATM = () => {
-    const atmRegex = /^[0-9]{12,19}$/;
+    const atmRegex = /^[0-9]{5,19}$/;
     if (!atmRegex.test(atmNumber)) {
-      setError('Số thẻ ATM phải từ 12 đến 19 chữ số');
+      setError('Số thẻ ATM phải từ 5 đến 19 chữ số');
       return false;
     }
 
@@ -126,14 +172,40 @@ const AfterPayment = ({ navigation, route }: AfterPaymentProps) => {
 
   // Hàm xử lý khi nhấn nút Đồng ý trong Modal
   const handlePayment = async () => {
-    setModalVisible(false);
-    navigation.navigate('PaymentSuccess', {
-      user,
-      payMethod,
-      total,
-      deliveryMethod,
-      cartId,
-    });
+    try {
+      if (!orderId) {
+        setError('Không tìm thấy mã đơn hàng');
+        setModalVisible(false);
+        return;
+      }
+
+      if (!cartId) {
+        setError('Không tìm thấy thông tin giỏ hàng');
+        setModalVisible(false);
+        return;
+      }
+
+      // Gọi action xử lý thanh toán với Redux
+      const result = await dispatch(processPayment({ orderId, cartId }));
+      
+      if (!result.payload) {
+        setError('Xử lý thanh toán thất bại. Vui lòng thử lại sau!');
+        setModalVisible(false);
+      } else {
+        setLocalPaymentSuccess(true);
+        setModalVisible(false);
+      }
+    } catch (err) {
+      console.error('Lỗi xử lý thanh toán:', err);
+      setError('Có lỗi xảy ra khi xử lý thanh toán');
+      setModalVisible(false);
+      
+      Alert.alert(
+        'Lỗi thanh toán',
+        'Không thể hoàn tất thanh toán. Vui lòng kiểm tra kết nối và thử lại.',
+        [{ text: 'OK' }]
+      );
+    }
   };
 
   return (
@@ -196,8 +268,20 @@ const AfterPayment = ({ navigation, route }: AfterPaymentProps) => {
             />
           </View>
         )}
+        
         {/* Hiển thị lỗi nếu có */}
         {error ? <Text style={styles.error}>{error}</Text> : null}
+        
+        {/* Thông tin đơn hàng */}
+        {orderDetails && (
+          <View style={styles.orderSection}>
+            <Text style={styles.sectionTitle}>Thông tin đơn hàng</Text>
+            <Text style={styles.orderInfo}>Mã đơn hàng: {orderDetails.id}</Text>
+            <Text style={styles.orderInfo}>Trạng thái: {orderDetails.status === 'pending' ? 'Chờ thanh toán' : orderDetails.status}</Text>
+            <Text style={styles.orderInfo}>Ngày tạo: {new Date(orderDetails.createdAt).toLocaleString('vi-VN')}</Text>
+          </View>
+        )}
+        
         {/* Thông tin khách hàng */}
         <View style={{ marginBottom: 20 }}>
           <Text style={styles.sectionTitle}>Thông tin khách hàng</Text>
@@ -217,12 +301,12 @@ const AfterPayment = ({ navigation, route }: AfterPaymentProps) => {
         <View style={{ marginBottom: 20 }}>
           <View style={styles.rowBetween}>
             <Text style={styles.label}>Tạm tính</Text>
-            <Text style={styles.value}>{total.toLocaleString('de-DE')}đ</Text>
+            <Text style={styles.value}>{total.toLocaleString('vi-VN')}đ</Text>
           </View>
           <View style={styles.rowBetween}>
             <Text style={styles.label}>Phí vận chuyển</Text>
             <Text style={styles.value}>
-              {shippingFee.toLocaleString('de-DE')}đ
+              {shippingFee.toLocaleString('vi-VN')}đ
             </Text>
           </View>
           <View style={styles.rowBetween}>
@@ -230,17 +314,26 @@ const AfterPayment = ({ navigation, route }: AfterPaymentProps) => {
             <Text
               style={[styles.value, { color: 'green', fontWeight: 'bold' }]}
             >
-              {(total + shippingFee).toLocaleString('de-DE')}đ
+              {(total + shippingFee).toLocaleString('vi-VN')}đ
             </Text>
           </View>
         </View>
 
         {/* Nút xác nhận */}
-        <TouchableOpacity style={styles.btnConfirm} onPress={handleConfirm}>
-          <Text style={styles.btnConfirmText}>XÁC NHẬN</Text>
+        <TouchableOpacity 
+          style={[
+            styles.btnConfirm,
+            loading && { backgroundColor: 'gray' }
+          ]} 
+          onPress={handleConfirm}
+          disabled={loading}
+        >
+          <Text style={styles.btnConfirmText}>
+            {loading ? 'ĐANG XỬ LÝ...' : 'XÁC NHẬN'}
+          </Text>
         </TouchableOpacity>
 
-        {/* Modal xác nhận xóa toàn bộ */}
+        {/* Modal xác nhận thanh toán */}
         <Modal
           animationType="slide"
           transparent
@@ -250,10 +343,22 @@ const AfterPayment = ({ navigation, route }: AfterPaymentProps) => {
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>Xác nhận thanh toán?</Text>
-              <Pressable style={styles.modalButton} onPress={handlePayment}>
-                <Text style={styles.modalButtonText}>Đồng ý</Text>
+              <Text style={styles.modalSubtitle}>
+                Bạn sẽ thanh toán số tiền {(total + shippingFee).toLocaleString('vi-VN')}đ cho đơn hàng.
+              </Text>
+              <Pressable 
+                style={[
+                  styles.modalButton,
+                  loading && { backgroundColor: 'gray' }
+                ]} 
+                onPress={handlePayment}
+                disabled={loading}
+              >
+                <Text style={styles.modalButtonText}>
+                  {loading ? 'ĐANG XỬ LÝ...' : 'ĐỒNG Ý'}
+                </Text>
               </Pressable>
-              <Pressable onPress={() => setModalVisible(false)}>
+              <Pressable onPress={() => setModalVisible(false)} disabled={loading}>
                 <Text style={styles.modalCancelText}>Hủy bỏ</Text>
               </Pressable>
             </View>
@@ -274,6 +379,14 @@ const styles = StyleSheet.create({
   },
   cardSection: {
     marginBottom: 20,
+  },
+  orderSection: {
+    marginBottom: 20,
+  },
+  orderInfo: {
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 5,
   },
   sectionTitle: {
     fontSize: 16,
@@ -337,11 +450,17 @@ const styles = StyleSheet.create({
     margin: 20,
   },
   modalTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '600',
     color: '#000',
-    marginBottom: 30,
+    marginBottom: 15,
     marginTop: 10,
+  },
+  modalSubtitle: {
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 20,
+    textAlign: 'center',
   },
   modalButton: {
     width: '100%',

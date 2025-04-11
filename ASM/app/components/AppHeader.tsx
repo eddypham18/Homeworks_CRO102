@@ -7,6 +7,7 @@ const AppHeader = ({
   cart,
   deleteCart,
   funcDeleteCart,
+  style,
 }: any) => {
   // Navigation
   const goBack = () => {
@@ -41,7 +42,7 @@ const AppHeader = ({
   };
 
   return (
-    <View style={styles.headerContainer}>
+    <View style={[styles.headerContainer, style]}>
       <TouchableOpacity onPress={goBack}>
         <Image
           style={styles.backIcon}

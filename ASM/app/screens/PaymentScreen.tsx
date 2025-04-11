@@ -7,11 +7,18 @@ import {
   Image,
   ScrollView,
   ToastAndroid,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 import InputUnderlined from '../components/InputUnderlined';
 import AppHeader from '../components/AppHeader';
 import api from '../configs/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDispatch, useSelector } from 'react-redux';
+import { createOrder, processPayment } from '../redux/actions/paymentActions';
+import { RootState } from '../redux/store/store';
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit';
+import { setPaymentSuccess, setCurrentOrder } from '../redux/slices/paymentSlice';
 
 interface User {
   id: string;
@@ -22,6 +29,11 @@ interface User {
 }
 
 const PaymentScreen: React.FC<any> = ({ navigation, route }) => {
+  const dispatch = useDispatch() as ThunkDispatch<RootState, unknown, AnyAction>;
+  const { loading, error: paymentError, currentOrder, paymentSuccess } = useSelector((state: RootState) => state.payment);
+  const { items } = useSelector((state: RootState) => state.cart);
+  const { products } = useSelector((state: RootState) => state.cart);
+  
   const total = route?.params?.total || 0;
   const cartId = route?.params?.cartId || '';
   const [user, setUser] = useState<User>({
@@ -36,6 +48,8 @@ const PaymentScreen: React.FC<any> = ({ navigation, route }) => {
   const [error, setError] = useState<string>('');
   const [deliveryMethod, setDeliveryMethod] = useState<number>(1);
   const [payMethod, setPayMethod] = useState<number>(1);
+  const [updatingUserInfo, setUpdatingUserInfo] = useState<boolean>(false);
+  const [userInfoChanged, setUserInfoChanged] = useState<boolean>(false);
 
   // Fetch thông tin người dùng
   useEffect(() => {
@@ -55,25 +69,223 @@ const PaymentScreen: React.FC<any> = ({ navigation, route }) => {
     fetchUser();
   }, []);
 
-  const goToAfterPayment = () => {
-    if (!phoneNumber || !address) {
-      setError('Vui lòng nhập đầy đủ thông tin!');
-      return;
+  // Kiểm tra nếu thông tin đã thay đổi
+  useEffect(() => {
+    if (user.id) {
+      const phoneChanged = phoneNumber !== user.phone;
+      const addressChanged = address !== user.address;
+      setUserInfoChanged(phoneChanged || addressChanged);
     }
+  }, [phoneNumber, address, user]);
 
-    if (!phoneNumber.match(/^[0-9]{10}$/)) {
-      setError('Số điện thoại không hợp lệ!');
-      return;
+  // Xử lý khi thanh toán thành công
+  useEffect(() => {
+    
+    if (paymentSuccess && currentOrder) {
+      // Reset payment success state sau khi navigate để tránh loop
+      dispatch(setPaymentSuccess(false)); // Reset trước khi navigate
+      setTimeout(() => {
+        navigation.navigate('AfterPayment', {
+          total,
+          user: {
+            ...user,
+            phone: phoneNumber,
+            address: address
+          },
+          deliveryMethod,
+          payMethod,
+          cartId,
+          orderId: currentOrder.id,
+        });
+      }, 300); // Tăng timeout để đảm bảo việc reset state đã hoàn tất
     }
+  }, [paymentSuccess, currentOrder]);
 
-    // chuyển sang màn hình AfterPayment
-    navigation.navigate('AfterPayment', {
-      total,
-      user: user,
-      deliveryMethod,
-      payMethod,
-      cartId,
-    });
+  // Hiển thị lỗi nếu có
+  useEffect(() => {
+    if (paymentError) {
+      setError(paymentError);
+    }
+  }, [paymentError]);
+
+  // Cập nhật thông tin người dùng
+  const updateUserInfo = async () => {
+    if (!userInfoChanged) return true;
+    
+    try {
+      setUpdatingUserInfo(true);
+      
+      if (!user.id) {
+        setError('Không thể cập nhật thông tin người dùng khi chưa đăng nhập');
+        return false;
+      }
+      
+      const updatedUser = {
+        ...user,
+        phone: phoneNumber,
+        address: address
+      };
+      
+  
+      const response = await api.patch(`/users/${user.id}`, {
+        phone: phoneNumber,
+        address: address
+      });
+      
+      if (response.data) {
+        setUser(updatedUser);
+        ToastAndroid.show('Thông tin đã được cập nhật', ToastAndroid.SHORT);
+        setUserInfoChanged(false);
+        return true;
+      } else {
+        setError('Không thể cập nhật thông tin người dùng');
+        return false;
+      }
+    } catch (err) {
+      console.error('Error updating user information:', err);
+      setError('Có lỗi xảy ra khi cập nhật thông tin');
+      return false;
+    } finally {
+      setUpdatingUserInfo(false);
+    }
+  };
+
+  const handlePayment = async () => {
+    try {
+      setError(''); // Xóa lỗi cũ nếu có
+      
+      // Kiểm tra địa chỉ
+      if (!address || address.trim() === '') {
+        setError('Vui lòng nhập địa chỉ giao hàng!');
+        return;
+      }
+      
+      // Kiểm tra số điện thoại
+      if (!phoneNumber || phoneNumber.trim() === '') {
+        setError('Vui lòng nhập số điện thoại!');
+        return;
+      }
+
+      // Kiểm tra người dùng đã đăng nhập chưa
+      if (!user.id) {
+        setError('Bạn cần đăng nhập để thực hiện thanh toán!');
+        return;
+      }
+
+      // Kiểm tra giỏ hàng
+      if (!items || items.length === 0) {
+        setError('Giỏ hàng của bạn đang trống!');
+        return;
+      }
+      
+
+      // Kiểm tra danh sách sản phẩm
+      if (!products || products.length === 0) {
+        setError('Không tìm thấy thông tin sản phẩm!');
+        return;
+      }
+
+      // Cập nhật thông tin người dùng nếu có thay đổi
+      if (userInfoChanged) {
+        const updateSuccess = await updateUserInfo();
+        if (!updateSuccess) {
+          // Hiển thị xác nhận nếu không thể cập nhật
+          Alert.alert(
+            'Thông tin chưa được lưu',
+            'Không thể cập nhật thông tin người dùng. Bạn vẫn muốn tiếp tục thanh toán?',
+            [
+              { 
+                text: 'Huỷ', 
+                style: 'cancel' 
+              },
+              { 
+                text: 'Tiếp tục', 
+                onPress: () => continuePayment() 
+              }
+            ],
+            { cancelable: false }
+          );
+          return;
+        }
+      }
+      
+      // Nếu thông tin không thay đổi hoặc đã cập nhật thành công, tiếp tục thanh toán
+      continuePayment();
+    } catch (err) {
+      console.error('Error in handlePayment:', err);
+      setError('Có lỗi xảy ra khi tạo đơn hàng. Vui lòng thử lại!');
+      Alert.alert('Lỗi', 'Không thể tạo đơn hàng. Vui lòng kiểm tra kết nối và thử lại.');
+    }
+  };
+
+  const continuePayment = async () => {
+    try {
+      // Lấy dữ liệu sản phẩm từ state Redux
+      // Chuẩn bị dữ liệu đơn hàng
+      const formattedItems = items.map(item => {
+        // Tìm thông tin sản phẩm tương ứng từ danh sách products
+        const productInfo = products.find(p => p.id === item.id);
+        
+        if (!productInfo) {
+          console.log('Product not found for item ID:', item.id);
+          return {
+            id: item.id,
+            quantity: item.quantity,
+            price: "0",
+            name: "Sản phẩm không xác định"
+          };
+        }
+        
+        return {
+          id: item.id,
+          quantity: item.quantity,
+          price: productInfo.price || "0",
+          name: productInfo.name || "Sản phẩm"
+        };
+      });
+
+      const shippingFee = deliveryMethod === 1 ? 15000 : 20000;
+      const orderData = {
+        userId: user.id,
+        items: formattedItems,
+        total: total + shippingFee,
+        shippingFee,
+        deliveryMethod,
+        payMethod,
+        address,
+        phone: phoneNumber,
+      };
+      
+
+      // Đặt trực tiếp sang màn hình AfterPayment nếu cần debug
+      const debugMode = false; // Đặt thành true để debug
+      if (debugMode) {
+        const tempOrderId = `OR${Date.now()}`;
+        // Set payment success và current order để useEffect chuyển hướng
+        dispatch(setCurrentOrder({
+          ...orderData,
+          id: tempOrderId,
+          status: 'pending',
+          createdAt: new Date().toISOString()
+        } as any));
+        dispatch(setPaymentSuccess(true));
+        return;
+      }
+      
+      // Gọi action để tạo đơn hàng
+      const result = await dispatch(createOrder(orderData));
+      
+      // Kiểm tra kết quả tạo đơn hàng
+      if (!result.payload) {
+        setError('Có lỗi xảy ra khi tạo đơn hàng. Vui lòng thử lại!');
+      } else {
+        // Nếu cần thiết, có thể set lại payment success ở đây
+        dispatch(setPaymentSuccess(true));
+      }
+    } catch (err) {
+      console.error('Error in continuePayment:', err);
+      setError('Có lỗi xảy ra khi tạo đơn hàng. Vui lòng thử lại!');
+    }
   };
 
   return (
@@ -101,6 +313,11 @@ const PaymentScreen: React.FC<any> = ({ navigation, route }) => {
             value={address}
             onChangeText={setAddress}
           />
+          {userInfoChanged && (
+            <Text style={styles.infoText}>
+              (Thông tin địa chỉ và số điện thoại sẽ được cập nhật vào tài khoản của bạn)
+            </Text>
+          )}
           {error ? <Text style={styles.error}>{error}</Text> : null}
         </View>
 
@@ -233,17 +450,40 @@ const PaymentScreen: React.FC<any> = ({ navigation, route }) => {
             </View>
           </View>
 
+          {/* Nút Cập nhật thông tin */}
+          {userInfoChanged && (
+            <TouchableOpacity
+              style={[
+                styles.updateButton,
+                updatingUserInfo ? styles.disabledButton : styles.activeUpdateButton,
+              ]}
+              onPress={updateUserInfo}
+              disabled={updatingUserInfo || !userInfoChanged}
+            >
+              {updatingUserInfo ? (
+                <ActivityIndicator color="#fff" size="small" />
+              ) : (
+                <Text style={styles.buttonText}>CẬP NHẬT THÔNG TIN</Text>
+              )}
+            </TouchableOpacity>
+          )}
+
           {/* Nút Thanh Toán */}
           <TouchableOpacity
             style={[
               styles.button,
-              phoneNumber && address
-                ? { backgroundColor: 'green' }
-                : { backgroundColor: 'gray' },
+              !address || !phoneNumber || loading || updatingUserInfo
+                ? styles.disabledButton 
+                : styles.activeButton,
             ]}
-            onPress={goToAfterPayment}
+            onPress={handlePayment}
+            disabled={!address || !phoneNumber || loading || updatingUserInfo}
           >
-            <Text style={styles.buttonText}>TIẾP TỤC</Text>
+            {loading ? (
+              <ActivityIndicator color="#fff" size="small" />
+            ) : (
+              <Text style={styles.buttonText}>TIẾP TỤC</Text>
+            )}
           </TouchableOpacity>
         </View>
       </View>
@@ -259,6 +499,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'red',
   },
+  infoText: {
+    fontSize: 14,
+    color: 'green',
+    marginBottom: 10,
+    fontStyle: 'italic',
+  },
   buttonText: {
     color: 'white',
     fontSize: 18,
@@ -271,6 +517,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 12,
     borderRadius: 10,
+  },
+  updateButton: {
+    marginTop: 20,
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 12,
+    borderRadius: 10,
+  },
+  activeUpdateButton: {
+    backgroundColor: '#2196F3',
+  },
+  activeButton: {
+    backgroundColor: 'green',
+  },
+  disabledButton: {
+    backgroundColor: 'gray',
   },
   subtitle: {
     fontSize: 14,
@@ -320,5 +584,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+  },
+  paymentButton: {
+    marginTop: 20,
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 12,
+    borderRadius: 10,
+    backgroundColor: 'green',
+  },
+  paymentButtonText: {
+    color: 'white',
+    fontSize: 18,
   },
 });

@@ -1,13 +1,12 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Image, FlatList, ActivityIndicator } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import api from '../configs/api';
 import AppHeader from '../components/AppHeader';
-import { RootState } from '../redux/store/store';
-import { clearUnreadNotifications } from '../redux/slices/paymentSlice';
 import { fetchOrderHistory } from '../redux/actions/paymentActions';
-import { ThunkDispatch } from '@reduxjs/toolkit';
-import { AnyAction } from 'redux';
-import { useFocusEffect } from '@react-navigation/native';
+import { RootState } from '../redux/store/store';
+import { AnyAction } from '@reduxjs/toolkit';
+import { ThunkDispatch } from 'redux-thunk';
 
 interface OrderItem {
     id: string;
@@ -25,32 +24,25 @@ interface OrderItemWithImage extends OrderItem {
     productImage?: string;
 }
 
-const NO_IMAGE = "https://vanchuyentrungquoc247.com/wp-content/uploads/2015/04/icon-giao-hang.png";
+const NO_IMAGE = "https://static.vecteezy.com/system/resources/previews/022/059/000/non_2x/no-image-available-icon-vector.jpg";
 
-const NotificationScreen = ({navigation}: any) => {
+const OrderHistoryScreen = ({navigation} : any) => {
     const dispatch = useDispatch<ThunkDispatch<RootState, unknown, AnyAction>>();
     const { orders, loading, error } = useSelector((state: RootState) => state.payment);
     const { user } = useSelector((state: RootState) => state.auth);
     const [refreshing, setRefreshing] = useState(false);
 
-    // Xóa số lượng thông báo chưa đọc khi vào màn hình
     useEffect(() => {
-        dispatch(clearUnreadNotifications());
-    }, []);
+        if (user) {
+            loadOrders();
+        }
+    }, [user]);
 
-    // Tự động tải lại dữ liệu khi màn hình được focus
-    useFocusEffect(
-        useCallback(() => {
-            const loadData = async () => {
-                if (user) {
-                    setRefreshing(true);
-                    await dispatch(fetchOrderHistory());
-                    setRefreshing(false);
-                }
-            };
-            loadData();
-        }, [user])
-    );
+    const loadOrders = async () => {
+        setRefreshing(true);
+        await dispatch(fetchOrderHistory());
+        setRefreshing(false);
+    };
 
     const formatDate = (date: string) => {
         const d = new Date(date);
@@ -71,10 +63,7 @@ const NotificationScreen = ({navigation}: any) => {
                     style={styles.orderItem}
                 >
                     <Image 
-                        source={{ 
-                            uri: item.productImage || NO_IMAGE,
-                            cache: 'force-cache',
-                        }} 
+                        source={{ uri: item.productImage || NO_IMAGE }} 
                         style={styles.image}
                         defaultSource={require('../../assets/images/no_image_found.png')}
                     />
@@ -85,10 +74,7 @@ const NotificationScreen = ({navigation}: any) => {
                         ]}>
                             {item.status === 'completed' ? 'Đặt hàng thành công' : 'Đã hủy đơn hàng'}
                         </Text>
-                        <Text style={styles.name}>
-                            {item.items[0].name}
-                            {item.items.length > 1 ? ` và ${item.items.length - 1} sản phẩm khác` : ''}
-                        </Text>
+                        <Text style={styles.name}>{item.items[0].name} | <Text style={styles.quantity}>Ưa bóng</Text></Text>
                         <Text style={styles.quantity}>{item.items.length} sản phẩm</Text>
                     </View>
                 </TouchableOpacity>
@@ -99,7 +85,7 @@ const NotificationScreen = ({navigation}: any) => {
     if (!user) {
         return (
             <View style={[styles.container, styles.centerContent]}>
-                <Text style={styles.emptyText}>Vui lòng đăng nhập để xem thông báo</Text>
+                <Text style={styles.emptyText}>Vui lòng đăng nhập để xem lịch sử đơn hàng</Text>
                 <TouchableOpacity 
                     style={styles.loginButton}
                     onPress={() => navigation.navigate('Login')}
@@ -114,7 +100,7 @@ const NotificationScreen = ({navigation}: any) => {
         return (
             <View style={[styles.container, styles.centerContent]}>
                 <ActivityIndicator size="large" color="green" />
-                <Text style={styles.loadingText}>Đang tải thông báo...</Text>
+                <Text style={styles.loadingText}>Đang tải danh sách đơn hàng...</Text>
             </View>
         );
     }
@@ -129,20 +115,20 @@ const NotificationScreen = ({navigation}: any) => {
 
     return (
         <View style={styles.container}>
-            <AppHeader title="THÔNG BÁO" navigation={navigation}/>
+            <AppHeader title="LỊCH SỬ GIAO DỊCH" navigation={navigation}/>
             <View style={{height: 20}}/>
             {orders.length === 0 ? (
                 <View style={styles.centerContent}>
-                    <Text style={styles.emptyText}>Bạn chưa có thông báo nào</Text>
+                    <Text style={styles.emptyText}>Bạn chưa có đơn hàng nào</Text>
                 </View>
             ) : (
                 <FlatList
                     data={orders}
                     renderItem={renderItem}
-                    keyExtractor={(item) => item.id}
+                    keyExtractor={item => item.id}
                     contentContainerStyle={styles.listContainer}
                     showsVerticalScrollIndicator={false}
-                    onRefresh={() => dispatch(fetchOrderHistory())}
+                    onRefresh={loadOrders}
                     refreshing={refreshing}
                 />
             )}
@@ -150,13 +136,26 @@ const NotificationScreen = ({navigation}: any) => {
     );
 };
 
-export default NotificationScreen;
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
         padding: 25
+    },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: 20,
+    },
+    backIcon: {
+        width: 24,
+        height: 24,
+    },
+    title: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#000',
     },
     centerContent: {
         flex: 1,
@@ -173,6 +172,7 @@ const styles = StyleSheet.create({
     },
     orderContainer: {
         backgroundColor: '#fff',
+        marginBottom: 10,
     },
     orderItem: {
         flexDirection: 'row',
@@ -231,3 +231,5 @@ const styles = StyleSheet.create({
         fontFamily: 'Poppins-Bold',
     },
 });
+
+export default OrderHistoryScreen; 

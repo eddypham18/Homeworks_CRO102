@@ -10,106 +10,60 @@ import {
   ToastAndroid,
   Modal,
   Pressable,
+  ActivityIndicator,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import api from '../configs/api';
-
-interface CartItem {
-  id: string;
-  quantity: number;
-  select: boolean;
-}
-
-interface Product {
-  id: string;
-  name: string;
-  price: string;
-  images: string[];
-  character?: string;
-}
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState, AppDispatch } from '../redux/store/store';
+import { fetchCart, fetchCartProducts, updateCartItems, clearCartItems } from '../redux/actions/cartActions';
+import { CartItem } from '../redux/slices/cartSlice';
+import { Product } from '../redux/slices/productSlice';
 
 const CartScreen = ({ navigation }: any) => {
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [cartId, setCartId] = useState<string>('');
-  const [products, setProducts] = useState<Product[]>([]);
+  const dispatch = useDispatch<AppDispatch>();
+  const { items, cartId, products, loading, error } = useSelector((state: RootState) => state.cart);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   useEffect(() => {
-    fetchCart();
-    fetchProducts();
-  }, []);
-
-  // Lấy giỏ hàng của user
-  const fetchCart = async () => {
-    try {
-      const userId = await AsyncStorage.getItem('userId');
-      const response = await api.get(`/cart?userId=${userId}`);
-      if (response.data && response.data.length > 0) {
-        setCart(response.data[0].items);
-        setCartId(response.data[0].id);
-      }
-    } catch (error) {
-      console.error('Lỗi khi lấy giỏ hàng:', error);
-    }
-  };
-
-  // Lấy danh sách sản phẩm
-  const fetchProducts = async () => {
-    try {
-      const response = await api.get('/products');
-      setProducts(response.data);
-    } catch (error) {
-      console.error('Lỗi khi lấy sản phẩm:', error);
-    }
-  };
-
-  // Cập nhật giỏ hàng
-  const updateCart = async (updatedCart: CartItem[]) => {
-    try {
-      await api.patch(`/cart/${cartId}`, { items: updatedCart });
-      setCart(updatedCart);
-    } catch (error) {
-      console.error('Lỗi khi cập nhật giỏ hàng:', error);
-    }
-  };
+    // Lấy giỏ hàng và sản phẩm khi component mount
+    dispatch(fetchCart());
+    dispatch(fetchCartProducts());
+  }, [dispatch]);
 
   // Toggle chọn/bỏ chọn sản phẩm
   const toggleSelectItem = (id: string) => {
-    const updatedCart = cart.map((item) =>
+    const updatedCart = items.map((item) =>
       item.id === id ? { ...item, select: !item.select } : item
     );
-    updateCart(updatedCart);
+    dispatch(updateCartItems({ cartId, items: updatedCart }));
   };
 
   // Tăng/giảm số lượng
   const handleQuantityChange = (id: string, change: number) => {
-    const updatedCart = cart.map((item) =>
+    const updatedCart = items.map((item) =>
       item.id === id
         ? { ...item, quantity: Math.max(1, item.quantity + change) }
         : item
     );
-    updateCart(updatedCart);
+    dispatch(updateCartItems({ cartId, items: updatedCart }));
   };
 
   // Xóa sản phẩm khỏi giỏ hàng
   const handleRemoveItem = (id: string) => {
-    const updatedCart = cart.filter((item) => item.id !== id);
-    updateCart(updatedCart);
+    const updatedCart = items.filter((item) => item.id !== id);
+    dispatch(updateCartItems({ cartId, items: updatedCart }));
   };
 
   // Xóa toàn bộ đơn hàng
   const handleRemoveAll = async () => {
-    try {
-      setModalVisible(false);
-      await updateCart([]); // cập nhật giỏ hàng rỗng
+    setModalVisible(false);
+    const result = await dispatch(clearCartItems(cartId));
+    if (result.payload) {
       ToastAndroid.show('Đã xóa toàn bộ đơn hàng!', ToastAndroid.SHORT);
-    } catch (error) {
-      console.error('Lỗi khi xóa toàn bộ đơn hàng:', error);
     }
   };
 
   // Tính tổng (chỉ tính những sản phẩm được chọn)
-  const total = cart.reduce((sum, item) => {
+  const total = items.reduce((sum, item) => {
     if (!item.select) return sum;
     const product = products.find((p) => p.id === item.id);
     if (!product) return sum;
@@ -182,6 +136,34 @@ const CartScreen = ({ navigation }: any) => {
     navigation.navigate('Payment', { total, cartId });
   };
 
+  // Hiển thị màn hình loading
+  if (loading && items.length === 0 && products.length === 0) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#007537" />
+        <Text style={styles.loadingText}>Đang tải giỏ hàng...</Text>
+      </View>
+    );
+  }
+
+  // Hiển thị nếu có lỗi
+  if (error && items.length === 0) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{error}</Text>
+        <TouchableOpacity
+          style={styles.retryButton}
+          onPress={() => {
+            dispatch(fetchCart());
+            dispatch(fetchCartProducts());
+          }}
+        >
+          <Text style={styles.retryText}>Thử lại</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <StatusBar
@@ -198,7 +180,7 @@ const CartScreen = ({ navigation }: any) => {
           />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>GIỎ HÀNG</Text>
-        {cart.length === 0 ? (
+        {items.length === 0 ? (
           <View />
         ) : (
           <TouchableOpacity onPress={() => setModalVisible(true)}>
@@ -210,13 +192,13 @@ const CartScreen = ({ navigation }: any) => {
         )}
       </View>
 
-      {cart.length === 0 ? (
+      {items.length === 0 ? (
         <Text style={styles.nullText}>Giỏ hàng của bạn hiện đang trống</Text>
       ) : (
         <View style={{ flex: 1 }}>
           {/* Danh sách giỏ hàng */}
           <FlatList
-            data={cart}
+            data={items}
             renderItem={renderItemCart}
             keyExtractor={(item) => item.id}
             contentContainerStyle={styles.cartListContainer}
@@ -230,7 +212,14 @@ const CartScreen = ({ navigation }: any) => {
                 {total.toLocaleString('de-DE')}đ
               </Text>
             </View>
-            <TouchableOpacity style={styles.btnPay} onPress={goToPayment}>
+            <TouchableOpacity 
+              style={[
+                styles.btnPay,
+                total === 0 ? styles.btnPayDisabled : null
+              ]} 
+              onPress={goToPayment}
+              disabled={total === 0}
+            >
               <Text style={styles.btnPayText}>Tiến hành thanh toán</Text>
             </TouchableOpacity>
           </View>
@@ -250,8 +239,14 @@ const CartScreen = ({ navigation }: any) => {
             <Text style={styles.modalSubtitle}>
               Thao tác này sẽ không thể khôi phục
             </Text>
-            <Pressable style={styles.modalButton} onPress={handleRemoveAll}>
-              <Text style={styles.modalButtonText}>Đồng ý</Text>
+            <Pressable 
+              style={styles.modalButton}
+              onPress={handleRemoveAll}
+              disabled={loading}
+            >
+              <Text style={styles.modalButtonText}>
+                {loading ? 'Đang xử lý...' : 'Đồng ý'}
+              </Text>
             </Pressable>
             <Pressable onPress={() => setModalVisible(false)}>
               <Text style={styles.modalCancelText}>Hủy bỏ</Text>
@@ -383,6 +378,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10,
   },
+  btnPayDisabled: {
+    backgroundColor: '#ccc',
+  },
   btnPayText: {
     fontSize: 18,
     color: '#fff',
@@ -431,5 +429,42 @@ const styles = StyleSheet.create({
     color: '#000',
     fontWeight: '400',
     textDecorationLine: 'underline',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#007537',
+    fontFamily: 'Poppins-Regular',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    padding: 20,
+  },
+  errorText: {
+    fontSize: 16,
+    color: 'red',
+    textAlign: 'center',
+    marginBottom: 20,
+    fontFamily: 'Poppins-Regular',
+  },
+  retryButton: {
+    backgroundColor: '#007537',
+    paddingHorizontal: 30,
+    paddingVertical: 10,
+    borderRadius: 5,
+  },
+  retryText: {
+    color: 'white',
+    fontSize: 16,
+    fontFamily: 'Poppins-Bold',
   },
 });

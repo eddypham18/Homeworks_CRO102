@@ -8,29 +8,23 @@ import {
   ToastAndroid,
   Alert,
   Keyboard,
+  ActivityIndicator,
 } from 'react-native';
 import PagerView from 'react-native-pager-view';
-import api from '../configs/api';
 import AppHeader from '../components/AppHeader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-interface ProductType {
-  id: string;
-  name: string;
-  price: string;
-  images: string[];
-  size: string;
-  quantity: number;
-  origin: string;
-  character?: string;
-  new?: boolean;
-  type?: string;
-}
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState, AppDispatch } from '../redux/store/store';
+import { fetchProductDetail } from '../redux/actions/productActions';
+import { Product } from '../redux/slices/productSlice';
+import api from '../configs/api';
 
 const Details = (props: any) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { selectedProduct, loading, error } = useSelector((state: RootState) => state.products);
+  
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [quantity, setQuantity] = useState(0);
-  const [product, setProduct] = useState<ProductType | null>(null);
 
   const { navigation } = props;
 
@@ -49,20 +43,14 @@ const Details = (props: any) => {
 
   // Lấy thông tin chi tiết sản phẩm qua ID
   useEffect(() => {
-    const getDetail = async () => {
-      try {
-        const result = await api.get(`/products/${id}`);
-        setProduct(result.data);
-      } catch (error) {
-        console.log('Lỗi khi get detail:', error);
-      }
-    };
-    getDetail();
-  }, [id]);
+    if (id) {
+      dispatch(fetchProductDetail(id));
+    }
+  }, [id, dispatch]);
 
   // Thêm sản phẩm vào giỏ hàng
   const add = async () => {
-    if (!product) return;
+    if (!selectedProduct) return;
     if (quantity < 1) {
       ToastAndroid.show('Vui lòng chọn số lượng!', ToastAndroid.SHORT);
       return;
@@ -73,29 +61,33 @@ const Details = (props: any) => {
         Alert.alert('Lỗi', 'User chưa đăng nhập');
         return;
       }
+      
       // Lấy giỏ hàng của user
       const cartResponse = await api.get(`/cart?userId=${userId}`);
-      let cartData =
-        cartResponse.data && cartResponse.data.length > 0
-          ? cartResponse.data[0]
-          : null;
+      let cart = cartResponse.data && cartResponse.data.length > 0
+        ? cartResponse.data[0]
+        : null;
+      
       // Nếu chưa có giỏ hàng, tạo mới giỏ hàng
-      if (!cartData) {
+      if (!cart) {
         const rand = Math.floor(Math.random() * 1000);
-        cartData = { id: 'CA' + rand, userId, items: [] };
-        await api.post('/cart', cartData);
+        cart = { id: 'CA' + rand, userId, items: [] };
+        await api.post('/cart', cart);
       }
+      
       // Kiểm tra nếu sản phẩm đã tồn tại trong giỏ hàng
-      const existingIndex = cartData.items.findIndex(
-        (item: any) => item.id === product.id
+      const existingIndex = cart.items.findIndex(
+        (item: any) => item.id === selectedProduct.id
       );
+      
       if (existingIndex > -1) {
-        cartData.items[existingIndex].quantity += quantity;
+        cart.items[existingIndex].quantity += quantity;
       } else {
-        cartData.items.push({ id: product.id, quantity, select: true });
+        cart.items.push({ id: selectedProduct.id, quantity, select: true });
       }
 
-      await api.patch(`/cart/${cartData.id}`, { items: cartData.items });
+      await api.patch(`/cart/${cart.id}`, { items: cart.items });
+      
       ToastAndroid.show('Đã thêm vào giỏ hàng!', ToastAndroid.SHORT);
       navigation.navigate('Cart');
     } catch (error: any) {
@@ -105,13 +97,13 @@ const Details = (props: any) => {
   };
 
   const renderImages = () => {
-    if (!product || !product.images || product.images.length === 0) {
+    if (!selectedProduct || !selectedProduct.images || selectedProduct.images.length === 0) {
       return null;
     }
     return (
       <View key={selectedIndex}>
         <Image
-          source={{ uri: product.images[selectedIndex] }}
+          source={{ uri: selectedProduct.images[selectedIndex] }}
           style={styles.imageProduct}
         />
       </View>
@@ -120,10 +112,10 @@ const Details = (props: any) => {
 
   // Hiển thị chấm (dots) tương ứng với số lượng ảnh
   const renderDots = () => {
-    if (!product || !product.images || product.images.length === 0) {
+    if (!selectedProduct || !selectedProduct.images || selectedProduct.images.length === 0) {
       return null;
     }
-    return product.images.map((_, index) => (
+    return selectedProduct.images.map((_, index) => (
       <View
         key={index}
         style={{
@@ -138,21 +130,47 @@ const Details = (props: any) => {
     ));
   };
 
-  if (!product) {
+  // Hiển thị trạng thái đang tải
+  if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <Text>Đang tải dữ liệu...</Text>
+        <ActivityIndicator size="large" color="#007537" />
+        <Text style={styles.loadingText}>Đang tải dữ liệu...</Text>
       </View>
     );
   }
 
-  const parsePrice = parseFloat(product.price.replace('.', '')) || 0;
+  // Hiển thị khi có lỗi
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{error}</Text>
+        <TouchableOpacity 
+          style={styles.retryButton} 
+          onPress={() => dispatch(fetchProductDetail(id))}
+        >
+          <Text style={styles.retryText}>Thử lại</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  // Hiển thị khi không có sản phẩm
+  if (!selectedProduct) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text>Không tìm thấy sản phẩm</Text>
+      </View>
+    );
+  }
+
+  const parsePrice = parseFloat(selectedProduct.price.replace('.', '')) || 0;
   const totalTemp = quantity * parsePrice;
 
   return (
     <View style={styles.container}>
       {/* Header */}
-      <AppHeader navigation={navigation} title={product.name} />
+      <AppHeader navigation={navigation} title={selectedProduct.name} />
 
       {/* Slider ảnh */}
       <View style={styles.slider}>
@@ -176,7 +194,7 @@ const Details = (props: any) => {
         <TouchableOpacity
           style={styles.nextIcon}
           onPress={() => {
-            if (product.images && selectedIndex < product.images.length - 1) {
+            if (selectedProduct.images && selectedIndex < selectedProduct.images.length - 1) {
               setSelectedIndex(selectedIndex + 1);
             }
           }}
@@ -190,22 +208,22 @@ const Details = (props: any) => {
 
       {/* Thông tin tóm tắt (type, character) */}
       <View style={styles.greenContaienr}>
-        {product.type ? (
+        {selectedProduct.type ? (
           <Text style={styles.greenBox}>
-            {product.type == 'plant'
+            {selectedProduct.type == 'plant'
               ? 'Cây trồng'
-              : product.type == 'plantpot'
+              : selectedProduct.type == 'plantpot'
               ? 'Chậu cảnh'
               : 'Phụ kiện'}
           </Text>
         ) : null}
-        {product.character ? (
-          <Text style={styles.greenBox}>{product.character}</Text>
+        {selectedProduct.character ? (
+          <Text style={styles.greenBox}>{selectedProduct.character}</Text>
         ) : null}
       </View>
 
       {/* Giá */}
-      <Text style={styles.price}>{product.price} đ</Text>
+      <Text style={styles.price}>{selectedProduct.price} đ</Text>
 
       {/* Chi tiết sản phẩm */}
       <View style={styles.field}>
@@ -213,16 +231,16 @@ const Details = (props: any) => {
       </View>
       <View style={styles.field}>
         <Text style={styles.infoText}>Kích cỡ</Text>
-        <Text style={styles.infoText}>{product.size}</Text>
+        <Text style={styles.infoText}>{selectedProduct.size}</Text>
       </View>
       <View style={styles.field}>
         <Text style={styles.infoText}>Xuất xứ</Text>
-        <Text style={styles.infoText}>{product.origin}</Text>
+        <Text style={styles.infoText}>{selectedProduct.origin}</Text>
       </View>
       <View style={styles.field}>
         <Text style={styles.infoText}>Tình trạng</Text>
         <Text style={[styles.infoText, { color: 'green' }]}>
-          Còn {product.quantity} sp
+          Còn {selectedProduct.quantity} sp
         </Text>
       </View>
 
@@ -269,6 +287,38 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'white',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#007537',
+    fontFamily: 'Poppins-Regular',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    padding: 20,
+  },
+  errorText: {
+    fontSize: 16,
+    color: 'red',
+    textAlign: 'center',
+    marginBottom: 20,
+    fontFamily: 'Poppins-Regular',
+  },
+  retryButton: {
+    backgroundColor: '#007537',
+    paddingHorizontal: 30,
+    paddingVertical: 10,
+    borderRadius: 5,
+  },
+  retryText: {
+    color: 'white',
+    fontSize: 16,
+    fontFamily: 'Poppins-Bold',
   },
   pagerView: {
     width: '100%',

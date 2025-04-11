@@ -13,10 +13,24 @@ const commonConfigs = {
 
 const instance = axios.create(commonConfigs);
 
+// Add request interceptor
 instance.interceptors.request.use(
-  (res) => res,
+  (config) => {
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Add response interceptor
+instance.interceptors.response.use(
+  (response) => {
+    return response;
+  },
   (error) => {
     const { data, status } = error.response || {};
+    
     switch (status) {
       case 401:
         console.log('Unauthorized');
@@ -37,8 +51,19 @@ instance.interceptors.request.use(
   }
 );
 
-const responseBody = (response) => response;
-const responseError = (response) => ({ isError: true, message: response });
+const responseBody = (response) => {
+
+  return response;
+};
+
+const responseError = (error) => {
+  return { 
+    isError: true, 
+    message: error.message || 'Unknown Error',
+    status: error.response?.status,
+    data: error.response?.data
+  };
+};
 
 export const api = {
   get: (url, config) =>

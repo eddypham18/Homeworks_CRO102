@@ -70,9 +70,8 @@ const SearchScreen: React.FC<SearchProps> = ({ navigation }) => {
     loadSearchHistory();
   }, []);
 
-  const handleSearch = () => {
-    Keyboard.dismiss();
-
+  // Thêm useEffect để lọc sản phẩm khi search thay đổi
+  useEffect(() => {
     if (search.trim() === '') {
       setResults(allProducts);
     } else {
@@ -80,12 +79,16 @@ const SearchScreen: React.FC<SearchProps> = ({ navigation }) => {
         item.name.toLowerCase().includes(search.toLowerCase())
       );
       setResults(filtered);
+    }
+  }, [search, allProducts]);
 
-      if (!searchHistory.includes(search)) {
-        const newHistory = [search, ...searchHistory];
-        setSearchHistory(newHistory);
-        saveSearchHistory(newHistory);
-      }
+  const handleSearch = () => {
+    Keyboard.dismiss();
+
+    if (search.trim() !== '' && !searchHistory.includes(search)) {
+      const newHistory = [search, ...searchHistory];
+      setSearchHistory(newHistory);
+      saveSearchHistory(newHistory);
     }
   };
 

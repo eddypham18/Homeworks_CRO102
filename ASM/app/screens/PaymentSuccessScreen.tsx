@@ -6,10 +6,23 @@ import {
   View,
   Image,
   FlatList,
+  ActivityIndicator,
+  Alert,
+  ToastAndroid,
+  Platform,
 } from 'react-native';
 import AppHeader from '../components/AppHeader';
 import api from '../configs/api';
 import PaymentItem from '../components/PaymentItem';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchOrderHistory } from '../redux/actions/paymentActions';
+import { clearCart } from '../redux/slices/cartSlice';
+import { RootState } from '../redux/store/store';
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit';
+import { resetPaymentState, addToOrderHistory } from '../redux/slices/paymentSlice';
+import notificationService from '../utils/NotificationService';
+
 
 interface User {
   id: string;
@@ -35,6 +48,26 @@ interface ProductType {
   quantityInCart?: number;
 }
 
+interface OrderDetails {
+  id: string;
+  status: string;
+  createdAt: string;
+  items: {
+    id: string;
+    name: string;
+    price: string;
+    quantity: number;
+  }[];
+  total: number;
+  shippingFee: number;
+  deliveryMethod: number;
+  payMethod: number;
+  address: string;
+  phone: string;
+  userId: string;
+  productImage?: string;
+}
+
 interface PaymentSuccessProps {
   navigation: any;
   route: {
@@ -44,6 +77,8 @@ interface PaymentSuccessProps {
       total: number;
       deliveryMethod: number;
       cartId: string;
+      orderId?: string;
+      fromAfterPayment?: boolean;
     };
   };
 }
@@ -52,9 +87,107 @@ const PaymentSuccess: React.FC<PaymentSuccessProps> = ({
   navigation,
   route,
 }) => {
-  const { user, payMethod, total, deliveryMethod, cartId } = route.params;
+  const dispatch = useDispatch() as ThunkDispatch<RootState, unknown, AnyAction>;
+  const { loading, currentOrder } = useSelector((state: RootState) => state.payment);
+  const { user, payMethod, total, deliveryMethod, cartId, orderId } = route.params;
 
   const [products, setProducts] = useState<ProductType[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState<boolean>(false);
+  const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
+  const [error, setError] = useState<string>('');
+  const [isProcessing, setIsProcessing] = useState<boolean>(true);
+
+  // Reset payment state when component mounts
+  useEffect(() => {
+    dispatch(resetPaymentState());
+  }, []);
+
+  // Xử lý hoàn tất đơn hàng và xóa giỏ hàng
+  const finalizeOrder = async () => {
+    try {
+      if (!orderId) return;
+
+      // Cập nhật trạng thái đơn hàng thành completed
+      await api.patch(`/orders/${orderId}`, {
+        status: 'completed'
+      });
+
+      // Xóa giỏ hàng sau khi đơn hàng đã hoàn tất
+      if (cartId) {
+        await api.patch(`/cart/${cartId}`, { items: [] });
+        dispatch(clearCart());
+      }
+
+      // Cập nhật lịch sử đơn hàng
+      dispatch(fetchOrderHistory());
+
+      setIsProcessing(false);
+    } catch (error) {
+      console.error('Error finalizing order:', error);
+      setError('Có lỗi xảy ra khi hoàn tất đơn hàng');
+    }
+  };
+
+  // Lấy thông tin chi tiết đơn hàng và hoàn tất quá trình thanh toán
+  useEffect(() => {
+    const fetchOrderDetails = async () => {
+      try {
+        if (!orderId) {
+          setError('Không tìm thấy mã đơn hàng');
+          return;
+        }
+
+        const response = await api.get(`/orders/${orderId}`);
+        
+        if (response.data) {
+          setOrderDetails(response.data);
+          
+          // Chỉ hoàn tất đơn hàng nếu trạng thái là 'pending'
+          if (response.data.status === 'pending') {
+            await finalizeOrder();
+          } else {
+            setIsProcessing(false);
+          }
+
+          if (response.data.items && response.data.items.length > 0) {
+            fetchProductsFromOrder(response.data.items);
+          }
+        } else {
+          setError('Không thể tải thông tin đơn hàng');
+        }
+      } catch (err) {
+        console.error('Error fetching order details:', err);
+        setError('Có lỗi xảy ra khi tải thông tin đơn hàng');
+      }
+    };
+
+    fetchOrderDetails();
+  }, [orderId]);
+
+  // Hiển thị thông báo khi đặt hàng thành công
+  useEffect(() => {
+    if (orderId && orderDetails && !isProcessing) {
+      // Hiển thị toast notification
+      if (Platform.OS === 'android') {
+        ToastAndroid.show('Đặt hàng thành công!', ToastAndroid.SHORT);
+      } else {
+        Alert.alert('Thông báo', 'Đặt hàng thành công!');
+      }
+
+      // Hiển thị push notification
+      const totalItems = orderDetails.items.reduce((sum, item) => sum + item.quantity, 0);
+      notificationService.showNotification(
+        "Đặt hàng thành công! 🌿",
+        `Đơn hàng #${orderId} với ${totalItems} sản phẩm đã được xác nhận`,
+        { orderId, type: 'order_success' }
+      );
+
+      // Chỉ thêm vào danh sách thông báo nếu không phải từ màn hình AfterPayment
+      if (!route.params?.fromAfterPayment) {
+        dispatch(addToOrderHistory(orderDetails));
+      }
+    }
+  }, [orderId, orderDetails, isProcessing]);
 
   // Hàm hiển thị tên phương thức vận chuyển
   const renderDeliveryMethod = () => {
@@ -72,11 +205,53 @@ const PaymentSuccess: React.FC<PaymentSuccessProps> = ({
     return 'Khác';
   };
 
-  // Lấy dữ liệu sản phẩm trong cart
+  // Lấy dữ liệu sản phẩm từ đơn hàng
+  const fetchProductsFromOrder = async (orderItems: any[]) => {
+    try {
+      setLoadingProducts(true);
+      
+      const productList: ProductType[] = [];
+      
+      for (const item of orderItems) {
+        try {
+          const response = await api.get(`/products/${item.id}`);
+          if (response.data) {
+            productList.push({
+              ...response.data,
+              quantityInCart: item.quantity,
+            });
+          }
+        } catch (err) {
+          console.error(`Error fetching product ${item.id}:`, err);
+        }
+      }
+      
+     
+      setProducts(productList);
+    } catch (error) {
+      console.error('Error fetching products from order:', error);
+      setError('Không thể tải thông tin sản phẩm từ đơn hàng');
+    } finally {
+      setLoadingProducts(false);
+    }
+  };
+
+  // Lấy dữ liệu sản phẩm trong cart (phương pháp cũ)
   const fetchProducts = async () => {
     try {
+      setLoadingProducts(true);
+   
+      
       const cartResponse = await api.get(`/cart/${cartId}`);
       const { items }: { items: CartItem[] } = cartResponse.data;
+      
+ 
+
+      if (!items || items.length === 0) {
+        console.log('No items in cart');
+        setLoadingProducts(false);
+        return;
+      }
 
       const promises = items.map((item) => api.get(`/products/${item.id}`));
       const responses = await Promise.all(promises);
@@ -86,32 +261,42 @@ const PaymentSuccess: React.FC<PaymentSuccessProps> = ({
         quantityInCart: items[index].quantity,
       }));
 
+   
       setProducts(productList);
     } catch (error) {
-      console.log('Error fetching products from cart:', error);
+      console.error('Error fetching products from cart:', error);
+      setError('Không thể tải thông tin sản phẩm');
+    } finally {
+      setLoadingProducts(false);
     }
   };
 
+  // Chỉ gọi fetchProducts nếu không có orderId
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    if (!orderId) {
+      fetchProducts();
+    }
+  }, [orderId]);
 
   const goToGuide = () => {
-    console.log('Chưa làm');
-    deleteItemCart();
+    console.log('Navigating to Guide screen');
+    navigation.navigate('HandbookList');
   };
 
   const goToHome = () => {
+    console.log('Navigating to Home screen');
     navigation.navigate('Tab', { screen: 'Home' });
-    deleteItemCart();
   };
 
   //Xóa dữ liệu cart
   const deleteItemCart = async () => {
     try {
+
       await api.patch(`/cart/${cartId}`, { items: [] });
+    
     } catch (error) {
-      console.log('Error deleting cart:', error);
+      console.error('Error deleting cart:', error);
+      setError('Không thể xóa giỏ hàng');
     }
   };
 
@@ -123,6 +308,13 @@ const PaymentSuccess: React.FC<PaymentSuccessProps> = ({
   const renderHeader = () => (
     <View style={{ marginBottom: 20 }}>
       <Text style={styles.successText}>Bạn đã đặt hàng thành công</Text>
+      
+      {orderId && (
+        <View style={{ marginBottom: 20 }}>
+          <Text style={styles.sectionTitle}>Mã đơn hàng</Text>
+          <Text style={[styles.infoText, { fontWeight: 'bold' }]}>{orderId}</Text>
+        </View>
+      )}
 
       {/* Thông tin khách hàng */}
       <View style={{ marginBottom: 20 }}>
@@ -149,6 +341,9 @@ const PaymentSuccess: React.FC<PaymentSuccessProps> = ({
       <View style={{ marginBottom: 0 }}>
         <Text style={styles.sectionTitle}>Đơn hàng đã chọn</Text>
       </View>
+      
+      {/* Hiển thị lỗi nếu có */}
+      {error ? <Text style={styles.errorText}>{error}</Text> : null}
     </View>
   );
 
@@ -157,7 +352,7 @@ const PaymentSuccess: React.FC<PaymentSuccessProps> = ({
     <View style={styles.buttonContainer}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <Text style={styles.infoFooter}>Đã thanh toán</Text>
-        <Text style={styles.infoFooter}>{total.toLocaleString('de-DE')}đ</Text>
+        <Text style={styles.infoFooter}>{total.toLocaleString('vi-VN')}đ</Text>
       </View>
 
       <TouchableOpacity style={styles.button} onPress={goToGuide}>
@@ -172,6 +367,15 @@ const PaymentSuccess: React.FC<PaymentSuccessProps> = ({
       </TouchableOpacity>
     </View>
   );
+
+  if (loading || loadingProducts) {
+    return (
+      <View style={[styles.container, styles.loadingContainer]}>
+        <ActivityIndicator size="large" color="green" />
+        <Text style={{ marginTop: 20, color: 'gray' }}>Đang tải thông tin...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -198,12 +402,17 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#fff',
   },
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   successText: {
     alignSelf: 'center',
     marginTop: 20,
     marginBottom: 30,
-    fontSize: 16,
+    fontSize: 18,
     color: 'green',
+    fontWeight: 'bold',
   },
   infoFooter: {
     fontSize: 16,
@@ -221,11 +430,18 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
     color: '#fff',
+    fontWeight: '500',
   },
   infoText: {
     fontSize: 16,
     color: 'gray',
     marginBottom: 5,
+  },
+  errorText: {
+    fontSize: 16,
+    color: 'red',
+    marginBottom: 10,
+    textAlign: 'center',
   },
   sectionTitle: {
     fontSize: 16,

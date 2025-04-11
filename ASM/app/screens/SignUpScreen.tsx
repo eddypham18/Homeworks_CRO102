@@ -10,9 +10,19 @@ import {
 import CustomTextInput from '../components/CustomTextInput';
 import React, { useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
-import api from '../configs/api';
+import { useDispatch, useSelector } from 'react-redux';
+import { registerUser } from '../redux/actions/authActions';
+import { RootState, AppDispatch } from '../redux/store/store';
+
+interface RegisterResponse {
+  success: boolean;
+  message: string;
+}
 
 const SignUpScreen = (props: any) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { error, loading } = useSelector((state: RootState) => state.auth);
+  
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -29,75 +39,38 @@ const SignUpScreen = (props: any) => {
   };
 
   const handlerRegister = async () => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const passwordRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&^])[A-Za-z\d@.#$!%*?&]{6,}$/;
-
-    let valid = true;
-
-    // Kiểm tra họ tên
-    if (name.trim() === '') {
-      setErrorName('Họ tên không để trống!');
-      valid = false;
-    } else {
-      setErrorName('');
-    }
-
-    // Kiểm tra định dạng email
-    if (!emailRegex.test(email)) {
-      setErrorEmail('Email không đúng định dạng!');
-      valid = false;
-    } else {
-      setErrorEmail('');
-    }
-
-    // Kiểm tra định dạng mật khẩu
-    if (!passwordRegex.test(password)) {
-      setErrorPassword('Password không hợp lệ!');
-      valid = false;
-    } else {
-      setErrorPassword('');
-    }
-
-    // Kiểm tra xác nhận mật khẩu
-    if (password !== confirmPassword) {
-      setErrorConfirmPassword('Mật khẩu không khớp!');
-      valid = false;
-    } else {
-      setErrorConfirmPassword('');
-    }
-
-    if (!valid) return;
-
-    try {
-      const checkResponse = await api.get(`/users?email=${email}`);
-      if (checkResponse.data && checkResponse.data.length > 0) {
-        Alert.alert('Email đã tồn tại', 'Vui lòng sử dụng email khác!');
-        return;
-      }
-
-      const rand = Math.floor(Math.random() * 1000);
-      const response = await api.post('/users', {
-        id: 'US' + rand,
-        name,
-        email,
-        password,
-        phone: '',
-        avatar: '',
-        address: '',
-      });
-
-      if (response.status === 201 || response.status === 200) {
-        Alert.alert('Đăng ký thành công!');
-        navigation.navigate('Login');
+    // Xóa các thông báo lỗi cũ
+    setErrorName('');
+    setErrorEmail('');
+    setErrorPassword('');
+    setErrorConfirmPassword('');
+    
+    // Gọi action đăng ký từ Redux
+    const result = await dispatch(registerUser({ 
+      name, 
+      email, 
+      password, 
+      confirmPassword 
+    }));
+    
+    // Xử lý kết quả đăng ký
+    if (result.payload && (result.payload as RegisterResponse).success) {
+      Alert.alert('Thông báo', 'Đăng ký thành công!', [
+        { text: 'OK', onPress: () => navigation.navigate('Login') }
+      ]);
+    } else if (error) {
+      // Hiển thị lỗi phù hợp dựa vào thông báo lỗi
+      if (error.includes('Họ tên')) {
+        setErrorName(error);
+      } else if (error.includes('Email')) {
+        setErrorEmail(error);
+      } else if (error.includes('Mật khẩu không khớp')) {
+        setErrorConfirmPassword(error);
+      } else if (error.includes('Mật khẩu')) {
+        setErrorPassword(error);
       } else {
-        Alert.alert('Đăng ký thất bại', 'Có lỗi xảy ra');
+        Alert.alert('Lỗi', error);
       }
-    } catch (error: any) {
-      Alert.alert(
-        'Lỗi đăng ký',
-        error.message || 'Có lỗi xảy ra khi kết nối đến server.'
-      );
     }
   };
 
@@ -165,8 +138,11 @@ const SignUpScreen = (props: any) => {
               alignItems: 'center',
             }}
             onPress={handlerRegister}
+            disabled={loading}
           >
-            <Text style={styles.dangNhapText}>Đăng ký</Text>
+            <Text style={styles.dangNhapText}>
+              {loading ? 'Đang xử lý...' : 'Đăng ký'}
+            </Text>
           </TouchableOpacity>
         </LinearGradient>
 

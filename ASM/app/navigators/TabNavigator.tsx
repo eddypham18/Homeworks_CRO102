@@ -1,15 +1,19 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useSelector } from 'react-redux';
+import { RootState } from '../redux/store/store';
 import HomeScreen from '../screens/HomeScreen';
 import SearchScreen from '../screens/SearchScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import NotificationScreen from '../screens/NotificationScreen';
+import { Ionicons } from '@expo/vector-icons';
 
 const Tab = createBottomTabNavigator();
 
 const TabNavigator = () => {
+  const unreadNotifications = useSelector((state: RootState) => state.payment.unreadNotifications);
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -43,10 +47,62 @@ const TabNavigator = () => {
         },
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Search" component={SearchScreen} />
-      <Tab.Screen name="Notification" component={NotificationScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              name={focused ? 'home' : 'home-outline'}
+              size={24}
+              color={focused ? '#00B761' : '#000'}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Search"
+        component={SearchScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              name={focused ? 'search' : 'search-outline'}
+              size={24}
+              color={focused ? '#00B761' : '#000'}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Notification"
+        component={NotificationScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              name={focused ? 'notifications' : 'notifications-outline'}
+              size={24}
+              color={focused ? '#00B761' : '#000'}
+            />
+          ),
+          tabBarBadge: unreadNotifications > 0 ? unreadNotifications : undefined,
+          tabBarBadgeStyle: {
+            backgroundColor: '#FF3B30',
+          }
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              name={focused ? 'person' : 'person-outline'}
+              size={24}
+              color={focused ? '#00B761' : '#000'}
+            />
+          ),
+        }}
+      />
     </Tab.Navigator>
   );
 };
