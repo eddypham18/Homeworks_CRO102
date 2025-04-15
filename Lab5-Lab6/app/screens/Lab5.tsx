@@ -20,7 +20,6 @@ export default function Lab5({ navigation }: any) {
         }
     };
 
-    console.log('Selected images:', images);
 
 
     return (

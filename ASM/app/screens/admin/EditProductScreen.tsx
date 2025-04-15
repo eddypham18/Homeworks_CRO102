@@ -261,6 +261,7 @@ const EditProductScreen = ({ navigation, route }: EditProductScreenProps) => {
               value={currentImageUrl}
               onChangeText={setCurrentImageUrl}
               placeholder="Nhập URL hình ảnh"
+              multiline={true}
             />
             <TouchableOpacity style={styles.addUrlButton} onPress={addImageUrl}>
               <Text style={styles.addUrlButtonText}>Thêm</Text>

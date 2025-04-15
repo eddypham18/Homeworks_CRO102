@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "ASM",
-    "slug": "ASM",
+    "name": "Lab8",
+    "slug": "Lab8",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -10,22 +10,14 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.yourcompany.asm"
+      "bundleIdentifier": "com.lab8.app"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.yourcompany.asm",
-      "permissions": [
-        "android.permission.READ_EXTERNAL_STORAGE",
-        "android.permission.WRITE_EXTERNAL_STORAGE",
-        "android.permission.READ_MEDIA_IMAGES",
-        "android.permission.CAMERA",
-        "android.permission.RECEIVE_BOOT_COMPLETED",
-        "android.permission.VIBRATE"
-      ]
+      "package": "com.lab8.app"
     },
     "web": {
       "bundler": "metro",
@@ -44,13 +36,6 @@
         }
       ],
       [
-        "expo-image-picker",
-        {
-          "photosPermission": "Ứng dụng cần truy cập thư viện ảnh để chọn ảnh đại diện.",
-          "cameraPermission": "Ứng dụng cần truy cập camera để chụp ảnh đại diện."
-        }
-      ],
-      [
         "expo-notifications",
         {
           "icon": "./assets/images/notification-icon.png",
@@ -60,13 +45,6 @@
     ],
     "experiments": {
       "typedRoutes": true
-    },
-    "notification": {
-      "icon": "./assets/images/notification-icon.png",
-      "color": "#ffffff",
-      "iosDisplayInForeground": true,
-      "androidMode": "default",
-      "androidCollapsedTitle": "Thông báo mới"
     }
   }
 }

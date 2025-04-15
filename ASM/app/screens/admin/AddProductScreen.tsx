@@ -38,15 +38,15 @@ const AddProductScreen = ({ navigation }: any) => {
       return;
     }
 
-    
+
     if (!currentImageUrl.startsWith('http://') && !currentImageUrl.startsWith('https://')) {
       Alert.alert(
-        'Lỗi', 
+        'Lỗi',
         'Đường dẫn hình ảnh không hợp lệ. URL phải bắt đầu bằng http:// hoặc https://'
       );
       return;
     }
-    
+
     try {
       new URL(currentImageUrl);
       const newImages = [...images, currentImageUrl];
@@ -137,162 +137,163 @@ const AddProductScreen = ({ navigation }: any) => {
 
   return (
     <View style={styles.container}>
-    <AppHeader title="THÊM SẢN PHẨM MỚI" navigation={navigation}/>
-    <View style={{height:20}}></View>
-    <ScrollView showsVerticalScrollIndicator={false} >
-      <View style={styles.formContainer}>
-        <Text style={styles.label}>Tên sản phẩm:</Text>
-        <TextInput
-          style={styles.input}
-          value={name}
-          onChangeText={setName}
-          placeholder="Nhập tên sản phẩm"
-        />
-
-        <Text style={styles.label}>Giá:</Text>
-        <TextInput
-          style={styles.input}
-          value={price}
-          onChangeText={setPrice}
-          placeholder="Nhập giá sản phẩm"
-          keyboardType="numeric"
-        />
-
-        <Text style={styles.label}>Kích thước:</Text>
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={size}
-            onValueChange={(itemValue: string) => setSize(itemValue)}
-            style={styles.picker}
-          >
-            <Picker.Item label="Nhỏ" value="Nhỏ" />
-            <Picker.Item label="Vừa" value="Vừa" />
-            <Picker.Item label="Lớn" value="Lớn" />
-          </Picker>
-        </View>
-
-        <Text style={styles.label}>Số lượng:</Text>
-        <TextInput
-          style={styles.input}
-          value={quantity}
-          onChangeText={setQuantity}
-          placeholder="Nhập số lượng sản phẩm"
-          keyboardType="numeric"
-        />
-
-        <Text style={styles.label}>Xuất xứ:</Text>
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={origin}
-            onValueChange={(itemValue: string) => setOrigin(itemValue)}
-            style={styles.picker}
-          >
-            <Picker.Item label="Châu Á" value="Châu Á" />
-            <Picker.Item label="Châu Phi" value="Châu Phi" />
-            <Picker.Item label="Châu Âu" value="Châu Âu" />
-            <Picker.Item label="Châu Mỹ" value="Châu Mỹ" />
-            <Picker.Item label="Châu Úc" value="Châu Úc" />
-            <Picker.Item label="Châu Nam Cực" value="Châu Nam Cực" />
-          </Picker>
-        </View>
-
-        <Text style={styles.label}>Loại sản phẩm:</Text>
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={productType}
-            onValueChange={(itemValue: string) => setProductType(itemValue)}
-            style={styles.picker}
-          >
-            <Picker.Item label="Cây trồng" value="plant" />
-            <Picker.Item label="Chậu cây" value="plantpot" />
-            <Picker.Item label="Phụ kiện" value="accessory" />
-          </Picker>
-        </View>
-
-        {productType === 'plant' && (
-          <>
-            <Text style={styles.label}>Đặc tính:</Text>
-            <View style={styles.pickerContainer}>
-              <Picker
-                selectedValue={character}
-                onValueChange={(itemValue: string) => setCharacter(itemValue)}
-                style={styles.picker}
-              >
-                <Picker.Item label="Ưa bóng" value="Ưa bóng" />
-                <Picker.Item label="Ưa sáng" value="Ưa sáng" />
-              </Picker>
-            </View>
-          </>
-        )}
-
-        <View style={styles.checkboxContainer}>
-          <Text style={styles.label}>Sản phẩm mới:</Text>
-          <TouchableOpacity
-            style={[styles.checkbox, isNew && styles.checkboxChecked]}
-            onPress={() => setIsNew(!isNew)}
-          >
-            {isNew && <Text style={styles.checkboxText}>✓</Text>}
-          </TouchableOpacity>
-        </View>
-
-        <Text style={styles.label}>Đường dẫn hình ảnh:</Text>
-        <View style={styles.imageUrlContainer}>
+      <AppHeader title="THÊM SẢN PHẨM MỚI" navigation={navigation} />
+      <View style={{ height: 20 }}></View>
+      <ScrollView showsVerticalScrollIndicator={false} >
+        <View style={styles.formContainer}>
+          <Text style={styles.label}>Tên sản phẩm:</Text>
           <TextInput
-            style={styles.imageUrlInput}
-            value={currentImageUrl}
-            onChangeText={setCurrentImageUrl}
-            placeholder="Nhập URL hình ảnh"
+            style={styles.input}
+            value={name}
+            onChangeText={setName}
+            placeholder="Nhập tên sản phẩm"
           />
-          <TouchableOpacity style={styles.addUrlButton} onPress={addImageUrl}>
-            <Text style={styles.addUrlButtonText}>Thêm</Text>
+
+          <Text style={styles.label}>Giá:</Text>
+          <TextInput
+            style={styles.input}
+            value={price}
+            onChangeText={setPrice}
+            placeholder="Nhập giá sản phẩm"
+            keyboardType="numeric"
+          />
+
+          <Text style={styles.label}>Kích thước:</Text>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={size}
+              onValueChange={(itemValue: string) => setSize(itemValue)}
+              style={styles.picker}
+            >
+              <Picker.Item label="Nhỏ" value="Nhỏ" />
+              <Picker.Item label="Vừa" value="Vừa" />
+              <Picker.Item label="Lớn" value="Lớn" />
+            </Picker>
+          </View>
+
+          <Text style={styles.label}>Số lượng:</Text>
+          <TextInput
+            style={styles.input}
+            value={quantity}
+            onChangeText={setQuantity}
+            placeholder="Nhập số lượng sản phẩm"
+            keyboardType="numeric"
+          />
+
+          <Text style={styles.label}>Xuất xứ:</Text>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={origin}
+              onValueChange={(itemValue: string) => setOrigin(itemValue)}
+              style={styles.picker}
+            >
+              <Picker.Item label="Châu Á" value="Châu Á" />
+              <Picker.Item label="Châu Phi" value="Châu Phi" />
+              <Picker.Item label="Châu Âu" value="Châu Âu" />
+              <Picker.Item label="Châu Mỹ" value="Châu Mỹ" />
+              <Picker.Item label="Châu Úc" value="Châu Úc" />
+              <Picker.Item label="Châu Nam Cực" value="Châu Nam Cực" />
+            </Picker>
+          </View>
+
+          <Text style={styles.label}>Loại sản phẩm:</Text>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={productType}
+              onValueChange={(itemValue: string) => setProductType(itemValue)}
+              style={styles.picker}
+            >
+              <Picker.Item label="Cây trồng" value="plant" />
+              <Picker.Item label="Chậu cây" value="plantpot" />
+              <Picker.Item label="Phụ kiện" value="accessory" />
+            </Picker>
+          </View>
+
+          {productType === 'plant' && (
+            <>
+              <Text style={styles.label}>Đặc tính:</Text>
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={character}
+                  onValueChange={(itemValue: string) => setCharacter(itemValue)}
+                  style={styles.picker}
+                >
+                  <Picker.Item label="Ưa bóng" value="Ưa bóng" />
+                  <Picker.Item label="Ưa sáng" value="Ưa sáng" />
+                </Picker>
+              </View>
+            </>
+          )}
+
+          <View style={styles.checkboxContainer}>
+            <Text style={styles.label}>Sản phẩm mới:</Text>
+            <TouchableOpacity
+              style={[styles.checkbox, isNew && styles.checkboxChecked]}
+              onPress={() => setIsNew(!isNew)}
+            >
+              {isNew && <Text style={styles.checkboxText}>✓</Text>}
+            </TouchableOpacity>
+          </View>
+
+          <Text style={styles.label}>Đường dẫn hình ảnh:</Text>
+          <View style={styles.imageUrlContainer}>
+            <TextInput
+              style={styles.imageUrlInput}
+              value={currentImageUrl}
+              onChangeText={setCurrentImageUrl}
+              placeholder="Nhập URL hình ảnh"
+              multiline={true}
+            />
+            <TouchableOpacity style={styles.addUrlButton} onPress={addImageUrl}>
+              <Text style={styles.addUrlButtonText}>Thêm</Text>
+            </TouchableOpacity>
+          </View>
+
+          {images.length > 0 && (
+            <View style={styles.imagesContainer}>
+              {images.map((image, index) => (
+                <View key={index} style={styles.imageContainer}>
+                  <Image source={{ uri: image }} style={styles.image} />
+                  <TouchableOpacity
+                    style={styles.removeImageButton}
+                    onPress={() => removeImage(index)}
+                  >
+                    <Text style={styles.removeImageButtonText}>✕</Text>
+                  </TouchableOpacity>
+                  <Text style={styles.imageUrl} numberOfLines={5} ellipsizeMode="tail">
+                    {truncateUrl(image)}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          )}
+
+          <LinearGradient
+            colors={['#007537', '#4CAF50']}
+            start={{ x: 0, y: 0.5 }}
+            end={{ x: 1, y: 0.5 }}
+            style={styles.saveButton}
+          >
+            <TouchableOpacity
+              onPress={handleSaveProduct}
+              disabled={loading}
+              style={{ width: '100%', alignItems: 'center' }}
+            >
+              <Text style={styles.saveButtonText}>
+                {loading ? 'Đang lưu...' : 'Lưu sản phẩm'}
+              </Text>
+            </TouchableOpacity>
+          </LinearGradient>
+
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={() => navigation.goBack()}
+            disabled={loading}
+          >
+            <Text style={styles.cancelButtonText}>Hủy</Text>
           </TouchableOpacity>
         </View>
-
-        {images.length > 0 && (
-          <View style={styles.imagesContainer}>
-            {images.map((image, index) => (
-              <View key={index} style={styles.imageContainer}>
-                <Image source={{ uri: image }} style={styles.image} />
-                <TouchableOpacity
-                  style={styles.removeImageButton}
-                  onPress={() => removeImage(index)}
-                >
-                  <Text style={styles.removeImageButtonText}>✕</Text>
-                </TouchableOpacity>
-                <Text style={styles.imageUrl} numberOfLines={5} ellipsizeMode="tail">
-                  {truncateUrl(image)}
-                </Text>
-              </View>
-            ))}
-          </View>
-        )}
-
-        <LinearGradient
-          colors={['#007537', '#4CAF50']}
-          start={{ x: 0, y: 0.5 }}
-          end={{ x: 1, y: 0.5 }}
-          style={styles.saveButton}
-        >
-          <TouchableOpacity
-            onPress={handleSaveProduct}
-            disabled={loading}
-            style={{ width: '100%', alignItems: 'center' }}
-          >
-            <Text style={styles.saveButtonText}>
-              {loading ? 'Đang lưu...' : 'Lưu sản phẩm'}
-            </Text>
-          </TouchableOpacity>
-        </LinearGradient>
-
-        <TouchableOpacity
-          style={styles.cancelButton}
-          onPress={() => navigation.goBack()}
-          disabled={loading}
-        >
-          <Text style={styles.cancelButtonText}>Hủy</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+      </ScrollView>
     </View>
   );
 };
@@ -361,12 +362,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   imageUrlContainer: {
+    flexShrink: 1,
     flexDirection: 'row',
     marginBottom: 16,
   },
   imageUrlInput: {
     flex: 1,
     backgroundColor: '#F6F6F6',
+    flexShrink: 1,
     borderRadius: 8,
     padding: 12,
     marginRight: 10,

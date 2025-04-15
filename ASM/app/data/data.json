@@ -8,7 +8,7 @@
       "phone": "0123456789",
       "address": "Số 1, Đại Cồ Việt, Hai Bà Trưng, Hà Nội",
       "role": "admin",
-      "avatar": "file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540anonymous%252FASM-7389b51e-8d62-45cc-8f31-85fa28cd25dc/ImagePicker/a956c655-45f6-4624-9f57-61b6b8929193.jpeg"
+      "avatar": ""
     },
     {
       "id": "US257",
@@ -25,8 +25,8 @@
       "email": "thai@gmail.com",
       "password": "Thai123@",
       "phone": "0963897928",
-      "address": "85 dinh thon",
-      "avatar": "file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540anonymous%252FASM-7389b51e-8d62-45cc-8f31-85fa28cd25dc/ImagePicker/8fb7faca-17e0-4ad8-a730-eacc71b29dd2.jpeg"
+      "address": "85 dinh thon, my dinh 2, ha noi",
+      "avatar": ""
     },
     {
       "id": "US535",
@@ -44,7 +44,7 @@
       "password": "Thai123@",
       "phone": "0963897928",
       "address": "85 Dinh Thon",
-      "avatar": "file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540anonymous%252FASM-7389b51e-8d62-45cc-8f31-85fa28cd25dc/ImagePicker/cbef6e9e-8150-4ebe-9120-62f22652d0bc.jpeg"
+      "avatar": ""
     },
     {
       "id": "US900",
@@ -53,20 +53,14 @@
       "password": "Thai123@",
       "phone": "0154123456",
       "address": "85 Dinh Thon",
-      "avatar": "file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540anonymous%252FASM-7389b51e-8d62-45cc-8f31-85fa28cd25dc/ImagePicker/57848e27-ed09-4e62-80c2-7c04c52ca8c5.jpeg"
+      "avatar": ""
     }
   ],
   "cart": [
     {
       "id": "CA422",
       "userId": "US956",
-      "items": [
-        {
-          "id": "PL2",
-          "quantity": 1,
-          "select": true
-        }
-      ]
+      "items": []
     },
     {
       "id": "CA511",
@@ -247,16 +241,18 @@
     {
       "id": "AC1",
       "name": "Bình tưới Sierra",
-      "price": "310.000",
+      "price": "315.000",
+      "size": "Nhỏ",
+      "quantity": 15,
+      "origin": "Việt Nam",
+      "character": "",
+      "new": false,
+      "type": "accessory",
       "images": [
         "https://s3-alpha-sig.figma.com/img/508d/4a73/1e689a274cf0d0cacd0620a56d43fb5e?Expires=1745193600&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=Tv3P1gej~8YtvKhqtLMQKz1DUQ4FNZ2HT1NTEZsDx85SdHeH1uaQC4oa206e5bJlllZWqndSJkuijwrI0Nu-uTiYl9lJQhyrdCvvzLG~LVr5HYWx1vGDL05vri3SNcvVfgvPN99Jya8I0Y5jZAMeFCyxh5kOXU9nXyEZiysfiYFNQhDgl2-T49LXVisZB4fk7dUG7fsY5ekNpqFJleQt3FmR7bV3IaKSbDzgshm~7NIeqm6bRNghj0iOBUJeprmxStjyV3unR8ZSyWOzkdFXBjdyb8tjjtSnVFkR4ouBAdelvnLvrdsPSOGTKY5dPEyS9mYSWwb2epYZeVMXw00EZw__",
         "https://s3-alpha-sig.figma.com/img/508d/4a73/1e689a274cf0d0cacd0620a56d43fb5e?Expires=1745193600&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=Tv3P1gej~8YtvKhqtLMQKz1DUQ4FNZ2HT1NTEZsDx85SdHeH1uaQC4oa206e5bJlllZWqndSJkuijwrI0Nu-uTiYl9lJQhyrdCvvzLG~LVr5HYWx1vGDL05vri3SNcvVfgvPN99Jya8I0Y5jZAMeFCyxh5kOXU9nXyEZiysfiYFNQhDgl2-T49LXVisZB4fk7dUG7fsY5ekNpqFJleQt3FmR7bV3IaKSbDzgshm~7NIeqm6bRNghj0iOBUJeprmxStjyV3unR8ZSyWOzkdFXBjdyb8tjjtSnVFkR4ouBAdelvnLvrdsPSOGTKY5dPEyS9mYSWwb2epYZeVMXw00EZw__",
         "https://s3-alpha-sig.figma.com/img/508d/4a73/1e689a274cf0d0cacd0620a56d43fb5e?Expires=1745193600&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=Tv3P1gej~8YtvKhqtLMQKz1DUQ4FNZ2HT1NTEZsDx85SdHeH1uaQC4oa206e5bJlllZWqndSJkuijwrI0Nu-uTiYl9lJQhyrdCvvzLG~LVr5HYWx1vGDL05vri3SNcvVfgvPN99Jya8I0Y5jZAMeFCyxh5kOXU9nXyEZiysfiYFNQhDgl2-T49LXVisZB4fk7dUG7fsY5ekNpqFJleQt3FmR7bV3IaKSbDzgshm~7NIeqm6bRNghj0iOBUJeprmxStjyV3unR8ZSyWOzkdFXBjdyb8tjjtSnVFkR4ouBAdelvnLvrdsPSOGTKY5dPEyS9mYSWwb2epYZeVMXw00EZw__"
-      ],
-      "size": "Nhỏ",
-      "quantity": 5,
-      "origin": "Việt Nam",
-      "type": "accessory"
+      ]
     },
     {
       "id": "77cf",
@@ -277,74 +273,54 @@
   ],
   "orders": [
     {
-      "id": "OR1744354054953-myfcmfx80",
-      "userId": "US956",
+      "id": "OR1744423375085",
+      "userId": "US1",
       "items": [
         {
           "id": "PL2",
-          "quantity": 1,
+          "quantity": 2,
           "price": "250.000",
           "name": "Song of India"
-        },
-        {
-          "id": "PL1",
-          "quantity": 1,
-          "price": "250.000",
-          "name": "Spider Plant"
         }
       ],
       "total": 515000,
       "shippingFee": 15000,
       "deliveryMethod": 1,
       "payMethod": 2,
-      "address": "85 dinh thon",
-      "phone": "0963897928",
+      "address": "Số 1, Đại Cồ Việt, Hai Bà Trưng, Hà Nội",
+      "phone": "0123456789",
       "status": "completed",
-      "createdAt": "2025-04-11T06:47:34.953Z"
+      "createdAt": "2025-04-12T02:02:55.085Z"
     },
     {
-      "id": "OR1744354112792-ae4c6kcwx",
+      "id": "OR1744425230655",
       "userId": "US956",
       "items": [
         {
-          "id": "PL3",
-          "quantity": 1,
+          "id": "PL2",
+          "quantity": 2,
           "price": "250.000",
-          "name": "Pink Anthurium"
-        }
-      ],
-      "total": 265000,
-      "shippingFee": 15000,
-      "deliveryMethod": 1,
-      "payMethod": 2,
-      "address": "85 dinh thon",
-      "phone": "0963897928",
-      "status": "completed",
-      "createdAt": "2025-04-11T06:48:32.792Z"
-    },
-    {
-      "id": "OR1744354597750-yfutzoldd",
-      "userId": "US956",
-      "items": [
+          "name": "Song of India"
+        },
         {
-          "id": "PL4",
+          "id": "PL1",
           "quantity": 1,
-          "price": "180.000",
-          "name": "Grey Star Calarthea"
+          "price": "240.000",
+          "name": "Spider Plant"
         }
       ],
-      "total": 195000,
+      "total": 755000,
       "shippingFee": 15000,
       "deliveryMethod": 1,
       "payMethod": 2,
       "address": "85 dinh thon",
       "phone": "0963897928",
       "status": "completed",
-      "createdAt": "2025-04-11T06:56:37.750Z"
+      "createdAt": "2025-04-12T02:33:50.655Z"
     },
     {
-      "id": "OR1744354733669",
-      "userId": "US956",
+      "id": "OR1744425961231",
+      "userId": "US1",
       "items": [
         {
           "id": "PL2",
@@ -357,174 +333,10 @@
       "shippingFee": 15000,
       "deliveryMethod": 1,
       "payMethod": 2,
-      "address": "85 dinh thon",
-      "phone": "0963897928",
-      "status": "completed",
-      "createdAt": "2025-04-11T06:58:53.669Z"
-    },
-    {
-      "id": "OR1744355073283",
-      "userId": "US956",
-      "items": [
-        {
-          "id": "PL2",
-          "quantity": 1,
-          "price": "250.000",
-          "name": "Song of India"
-        }
-      ],
-      "total": 265000,
-      "shippingFee": 15000,
-      "deliveryMethod": 1,
-      "payMethod": 1,
-      "address": "85 dinh thon",
-      "phone": "0963897928",
-      "status": "pending",
-      "createdAt": "2025-04-11T07:04:33.283Z"
-    },
-    {
-      "id": "OR1744355267935",
-      "userId": "US535",
-      "items": [
-        {
-          "id": "PL1",
-          "quantity": 1,
-          "price": "250.000",
-          "name": "Spider Plant"
-        },
-        {
-          "id": "AC2",
-          "quantity": 1,
-          "price": "270.000",
-          "name": "Bình tưới CB2 SAIC"
-        },
-        {
-          "id": "PP3",
-          "quantity": 1,
-          "price": "150.000",
-          "name": "Planta Rosewood"
-        }
-      ],
-      "total": 415000,
-      "shippingFee": 15000,
-      "deliveryMethod": 1,
-      "payMethod": 2,
-      "address": "85 Dinh Thon",
-      "phone": "0963897928",
-      "status": "completed",
-      "createdAt": "2025-04-11T07:07:47.935Z"
-    },
-    {
-      "id": "OR1744355474450",
-      "userId": "US535",
-      "items": [
-        {
-          "id": "PL7",
-          "quantity": 1,
-          "price": "300.000",
-          "name": "Devil's Ivy"
-        }
-      ],
-      "total": 315000,
-      "shippingFee": 15000,
-      "deliveryMethod": 1,
-      "payMethod": 2,
-      "address": "85 Dinh Thon",
-      "phone": "0963897928",
-      "status": "completed",
-      "createdAt": "2025-04-11T07:11:14.451Z"
-    },
-    {
-      "id": "OR1744364564070",
-      "userId": "US717",
-      "items": [
-        {
-          "id": "PL1",
-          "quantity": 3,
-          "price": "240.000",
-          "name": "Spider Plant"
-        },
-        {
-          "id": "PP2",
-          "quantity": 1,
-          "price": "250.000",
-          "name": "Planta Lemon Balm"
-        }
-      ],
-      "total": 990000,
-      "shippingFee": 20000,
-      "deliveryMethod": 2,
-      "payMethod": 2,
-      "address": "85 Dinh Thon, My Dinh 1, Ha Noi",
-      "phone": "0963897928",
-      "status": "completed",
-      "createdAt": "2025-04-11T09:42:44.070Z"
-    },
-    {
-      "id": "OR1744365154415",
-      "userId": "US1",
-      "items": [
-        {
-          "id": "PL1",
-          "quantity": 1,
-          "price": "240.000",
-          "name": "Spider Plant"
-        }
-      ],
-      "total": 255000,
-      "shippingFee": 15000,
-      "deliveryMethod": 1,
-      "payMethod": 2,
       "address": "Số 1, Đại Cồ Việt, Hai Bà Trưng, Hà Nội",
       "phone": "0123456789",
       "status": "completed",
-      "createdAt": "2025-04-11T09:52:34.415Z"
-    },
-    {
-      "id": "OR1744366126377",
-      "userId": "US1",
-      "items": [
-        {
-          "id": "5b57",
-          "quantity": 1,
-          "price": "300000",
-          "name": "Planta Matte Black"
-        }
-      ],
-      "total": 315000,
-      "shippingFee": 15000,
-      "deliveryMethod": 1,
-      "payMethod": 2,
-      "address": "Số 1, Đại Cồ Việt, Hai Bà Trưng, Hà Nội",
-      "phone": "0123456789",
-      "status": "completed",
-      "createdAt": "2025-04-11T10:08:46.377Z"
-    },
-    {
-      "id": "OR1744366454447",
-      "userId": "US900",
-      "items": [
-        {
-          "id": "PL4",
-          "quantity": 2,
-          "price": "180.000",
-          "name": "Grey Star Calarthea"
-        },
-        {
-          "id": "PP1",
-          "quantity": 2,
-          "price": "250.000",
-          "name": "Planta Trắng"
-        }
-      ],
-      "total": 880000,
-      "shippingFee": 20000,
-      "deliveryMethod": 2,
-      "payMethod": 2,
-      "address": "85 Dinh Thon",
-      "phone": "0911245365",
-      "status": "completed",
-      "createdAt": "2025-04-11T10:14:14.447Z"
+      "createdAt": "2025-04-12T02:46:01.231Z"
     }
   ]
 }
